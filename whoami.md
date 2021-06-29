@@ -1,7 +1,7 @@
 ---
-title: /about
-layout: about
-permalink: /about
+title: /whoami
+layout: whoami
+permalink: /whoami
 ---
 <h1>hoothoot@0x4F776C:~$ whoami</h1>
 <br>
