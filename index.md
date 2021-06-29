@@ -24,10 +24,6 @@ permalink: /
 * [DynamoRIO integration with Ghidra](https://github.com/0x4F776C/Malware-Analysis/tree/main/DynamoRIO%20integration%20with%20Ghidra)
 * [Reverse Engineering](https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering)
     * [Radare2](https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering/Radare2)
-  <li></ul></li>
-  <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries'>Vulnerable Binaries</a></li>
-  <li><ul></li>
-    <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries/AdobeReader2017'>Adobe Reader 2017</a></li>
-  <li></ul></li>
-  <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Yara'>Yara</a></li>
-</ul>
+* [Vulnerable Binaries](https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries)
+    * [Adobe Reader 2017](https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries/AdobeReader2017)
+* [Yara](https://github.com/0x4F776C/Malware-Analysis/tree/main/Yara)
