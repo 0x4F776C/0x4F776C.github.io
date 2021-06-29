@@ -27,3 +27,12 @@ permalink: /
 * [Vulnerable Binaries](https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries)
     1. [Adobe Reader 2017](https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries/AdobeReader2017)
 * [Yara](https://github.com/0x4F776C/Malware-Analysis/tree/main/Yara)
+
+⚔️ [Offensive Security](https://github.com/0x4F776C/Offensive-Security)
+* [Deeplink Reverse TCP](https://github.com/0x4F776C/Offensive-Security/tree/main/Deeplink%20Reverse%20TCP)
+* [PowerSnail](https://github.com/0x4F776C/Offensive-Security/tree/main/PowerSnail)
+
+⚙️ [Setup Guides](https://github.com/0x4F776C/Setup-Guides)
+* [Chocolatey](https://github.com/0x4F776C/Setup-Guides/tree/main/Chocolatey)
+* [PolarProxy x INetSim](https://github.com/0x4F776C/Setup-Guides/tree/main/PolarProxy%20x%20INetSim)
+* [Windows OS](https://github.com/0x4F776C/Setup-Guides/tree/main/Windows%20OS)
