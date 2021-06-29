@@ -32,9 +32,9 @@ permalink: /
   <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/DynamoRIO%20integration%20with%20Ghidra'>DynamoRIO integration with Ghidra</a></li>
   <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering'>Reverse Engineering</a></li>
   <ul>
-    <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering/Radare2'></a>Radare2</li>
+    <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering/Radare2'>Radare2</a></li>
   </ul>
-  <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries'></a>Vulnerable Binaries</li>
+  <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries'>Vulnerable Binaries</a></li>
   <ul>
     <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries/AdobeReader2017'>Adobe Reader 2017</a></li>
   </ul>
