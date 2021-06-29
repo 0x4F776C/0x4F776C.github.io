@@ -18,5 +18,5 @@ plugins:
 
 header_pages:
   - index.md
-  - about.md
+  - whoami.md
   - mesg.md
