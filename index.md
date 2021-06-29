@@ -6,12 +6,12 @@ permalink: /
 
 # hoothoot@0x4F776C:~$ watch -n 1 ls -l /
 
-<a href='https://github.com/0x4F776C/Automation'>Automation</a>
-* <a href='https://github.com/0x4F776C/Automation/tree/main/Chocolatey4Free'>Chocolatey4Free</a>
-* <a href='https://github.com/0x4F776C/Automation/tree/main/Docker%20x%20Vagrant'>Docker x Vagrant</a>
-* <a href='https://github.com/0x4F776C/Automation/tree/main/YouTube%20Content%20Searcher'>YouTube Content Searcher</a>
+[Automation](https://github.com/0x4F776C/Automation)
+* [Chocolatey4Free](https://github.com/0x4F776C/Automation/tree/main/Chocolatey4Free)
+* [Docker x Vagrant](https://github.com/0x4F776C/Automation/tree/main/Docker%20x%20Vagrant)
+* [YouTube Content Searcher](https://github.com/0x4F776C/Automation/tree/main/YouTube%20Content%20Searcher)
 * [test](http://google.com)
-
+  
 <a href='https://github.com/0x4F776C/Defensive-Security'>Defensive Security</a>
 <ul>
   <li><a href='https://github.com/0x4F776C/Defensive-Security/tree/main/Network%20Printer%20Traffic%20Generator'>Network Printer Traffic Generator</a></li>
