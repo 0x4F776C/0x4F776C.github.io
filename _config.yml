@@ -20,5 +20,3 @@ header_pages:
   - index.md
   - whoami.md
   - mesg.md
-
-markdown: rdiscount
