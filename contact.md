@@ -3,8 +3,12 @@ title: /contact
 layout: contact
 permalink: /contact
 ---
-<h1>Looking to contact me?</h1>
+<h1>hoothoot@0x4F776C:~$ mesg 'Lee Chun Hao'</h1>
 
-<p>Email: 1806607F@student.tp.edu.sg</p>
-<p>LinkedIn: Link is in <a href="/about">/about</a> page</p>
-<p>Instagram: Link is in <a href="/about">/about</a> and require a follow first 🤪</p>
+<ul>
+	<li><a href="https://www.instagram.com/chunhaoxx/?hl=en">Instagram</a></li>
+	<li><a href="https://github.com/0x4F776C">GitHub</a></li>
+	<li><a href="https://www.linkedin.com/in/lee-chun-hao">LinkedIn</a></li>
+	<li><a href="https://www.hackthebox.eu/profile/152036">HackTheBox</a>
+	<script src="https://www.hackthebox.eu/badge/152036"></script></li>
+</ul>
