@@ -19,4 +19,4 @@ plugins:
 header_pages:
   - index.md
   - about.md
-  - contact.md
+  - mesg.md
