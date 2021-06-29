@@ -9,4 +9,4 @@ permalink: /mesg
 * [GitHub](https://github.com/0x4F776C)
 * [LinkedIn](https://www.linkedin.com/in/lee-chun-hao)
 * [HackTheBox](https://www.hackthebox.eu/profile/152036)
-* <script src="https://www.hackthebox.eu/badge/152036"></script>
+<script src="https://www.hackthebox.eu/badge/152036"></script>
