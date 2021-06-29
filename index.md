@@ -4,7 +4,7 @@ layout: home
 permalink: /
 ---
 
-# Personal Repositories
+<h1>Personal Repositories</h1>
 
 <a href='https://github.com/0x4F776C/Automation'>Automation</a>
 <ul>
