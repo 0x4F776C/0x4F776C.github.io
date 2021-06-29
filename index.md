@@ -23,9 +23,9 @@ permalink: /
 * [CAPE vs JoeSB](https://github.com/0x4F776C/Malware-Analysis/tree/main/CAPE%20vs%20JoeSB)
 * [DynamoRIO integration with Ghidra](https://github.com/0x4F776C/Malware-Analysis/tree/main/DynamoRIO%20integration%20with%20Ghidra)
 * [Reverse Engineering](https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering)
-    * [Radare2](https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering/Radare2)
+  * [Radare2](https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering/Radare2)
 * [Vulnerable Binaries](https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries)
-    * [Adobe Reader 2017](https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries/AdobeReader2017)
+  * [Adobe Reader 2017](https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries/AdobeReader2017)
 * [Yara](https://github.com/0x4F776C/Malware-Analysis/tree/main/Yara)
 
 ⚔️ [Offensive Security](https://github.com/0x4F776C/Offensive-Security)
