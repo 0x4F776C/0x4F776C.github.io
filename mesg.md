@@ -3,7 +3,7 @@ title: /mesg
 layout: mesg
 permalink: /mesg
 ---
-<h1>hoothoot@0x4F776C:~$ mesg 'Lee Chun Hao'</h1>
+<h1>hoothoot@0x4F776C:~$ mesg</h1>
 
 <ul>
 	<li><a href="https://www.instagram.com/chunhaoxx/?hl=en">Instagram</a></li>
