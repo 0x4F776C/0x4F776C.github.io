@@ -4,7 +4,7 @@ layout: home
 permalink: /
 ---
 
-<h1>hoothoot@0x4F776C:~$ cd / && ls -lah</h1>
+<h1>hoothoot@0x4F776C:~$ watch -n 1 ls -l /</h1>
 
 <a href='https://github.com/0x4F776C/Automation'>Automation</a>
 <ul>
