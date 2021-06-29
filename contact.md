@@ -1,7 +1,7 @@
 ---
-title: /contact
-layout: contact
-permalink: /contact
+title: /mesg
+layout: mesg
+permalink: /mesg
 ---
 <h1>hoothoot@0x4F776C:~$ mesg 'Lee Chun Hao'</h1>
 
