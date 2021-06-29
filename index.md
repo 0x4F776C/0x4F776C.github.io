@@ -31,12 +31,12 @@ permalink: /
   <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/CAPE%20vs%20JoeSB'>CAPE vs JoeSB</a></li>
   <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/DynamoRIO%20integration%20with%20Ghidra'>DynamoRIO integration with Ghidra</a></li>
   <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering'>Reverse Engineering</a></li>
-  <ul>
+  <li><ul></li>
     <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Reverse-Engineering/Radare2'>Radare2</a></li>
-  </ul>
+  <li></ul></li>
   <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries'>Vulnerable Binaries</a></li>
-  <ul>
+  <li><ul></li>
     <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Vulnerable-Binaries/AdobeReader2017'>Adobe Reader 2017</a></li>
-  </ul>
+  <li></ul></li>
   <li><a href='https://github.com/0x4F776C/Malware-Analysis/tree/main/Yara'>Yara</a></li>
 </ul>
