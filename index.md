@@ -8,7 +8,10 @@ permalink: /
 
 🤖 [Automation](https://github.com/0x4F776C/Automation)
 >* [Chocolatey4Free](https://github.com/0x4F776C/Automation/tree/main/Chocolatey4Free)
->* [Docker x Vagrant](https://github.com/0x4F776C/Automation/tree/main/Docker%20x%20Vagrant)
+>* [Docker](https://github.com/0x4F776C/Automation/tree/main/Docker)
+>>* [Docker x Vagrant](https://github.com/0x4F776C/Automation/tree/main/Docker%20x%20Vagrant)
+>* [Vagrant](https://github.com/0x4F776C/Automation/tree/main/Vagrant)
+>>* [Docker x Vagrant](https://github.com/0x4F776C/Automation/tree/main/Docker%20x%20Vagrant)
 >* [YouTube Content Searcher](https://github.com/0x4F776C/Automation/tree/main/YouTube%20Content%20Searcher)
 
 🛡️ [Defensive Security](https://github.com/0x4F776C/Defensive-Security)
