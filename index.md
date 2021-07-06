@@ -19,7 +19,7 @@ permalink: /
 >* [Python SoC Training Platform](https://github.com/0x4F776C/Defensive-Security/tree/main/Python%20SoC%20Training%20Platform)
 
 🦠 [Malware](https://github.com/0x4F776C/Malware)
->* [Windows Malware Dropper](https://github.com/0x4F776C/Malware/tree/main/Windows%20Malware%20Dropper)
+>* [Windows Malware Dropper](https://github.com/0x4F776C/Windows-Malware-Dropper)
 
 🔎 [Malware Analysis](https://github.com/0x4F776C/Malware-Analysis)
 >* [CAPE Signature Grabber](https://github.com/0x4F776C/Malware-Analysis/tree/main/CAPE%20Signature%20Grabber)
