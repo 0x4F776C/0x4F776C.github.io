@@ -6,7 +6,7 @@ permalink: /
 
 # hoothoot@0x4F776C:~$ cat README.md
 
-This site contains a list of index from my [GitHub](https://github.com/0x4F776C). The site will be updated whenever changes are made in my repository.
+This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 <p>Do take a look around as there may be some things that may excite you!</p>
 
 ### Categories
