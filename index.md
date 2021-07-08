@@ -4,6 +4,20 @@ layout: home
 permalink: /
 ---
 
+# hoothoot@0x4F776C:~$ cat README.md
+
+<p>This site contains a list of index from my [GitHub](https://github.com/0x4F776C). The site will be updated whenever changes are made in my repository.</p>
+<p>Do take a look around as there may be some things that may excite you!</p>
+
+### Categories
+* Automation
+* Defensive Security
+* Malware
+* Malware Analysis
+* Offensive Security
+* Setup Guides
+* Docker Images
+
 # hoothoot@0x4F776C:~$ watch -n 1 ls -l /
 
 🤖 Automation
