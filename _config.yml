@@ -7,7 +7,8 @@ header_pages:
   - whoami.md
   - mesg.md
 
-footer: 'follow us on <a href="https://twitter.com/">twitter</a>'
+#footer: 'follow us on <a href="https://twitter.com/">twitter</a>'
+footer: 'Follow me on <a href="https://www.instagram.com/chunhaoxx/">Instagram</a>'
 
 style: light # dark (default) or light
 listen_for_clients_preferred_style: true # true or false (default)
