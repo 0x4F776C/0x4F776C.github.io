@@ -1,20 +1,28 @@
-# Example Site settings
+# Site settings
+title: 0x4F776C's Nest
+tag_text: Computing Blog
+description: 0x4F776C's GitHub page - Automation, Defensive Security, Malware, Malware Analysis, Offensive Security, Setup Guides, Docker Images, etc..)
+url: "https://0x4f776c.github.io"
+baseurl: /
 
+# Tracker
 google_analytics: UA-NNNNNNNN-N
 
+# Header
 header_pages:
   - index.md
   - whoami.md
   - mesg.md
 
+# Footer
 footer: 'Follow me on <a href="https://www.instagram.com/chunhaoxx/">Instagram</a>'
 
+# Page style
 style: light # dark (default) or light
 listen_for_clients_preferred_style: true # true or false (default)
 
+# Plugins
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-feed
-
-permalink: pretty
