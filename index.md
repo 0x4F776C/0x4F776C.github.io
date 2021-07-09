@@ -7,7 +7,7 @@ permalink: /
 # hoothoot@0x4F776C:~$ cat README.md
 
 This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
-<p>Do take a look around as there may be some things that may excite you!</p>
+<p>Do take a look around as there might be things that may be able to help you!</p>
 
 ### Categories
 * Automation
