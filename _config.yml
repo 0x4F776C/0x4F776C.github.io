@@ -7,7 +7,6 @@ header_pages:
   - whoami.md
   - mesg.md
 
-#footer: 'follow us on <a href="https://twitter.com/">twitter</a>'
 footer: 'Follow me on <a href="https://www.instagram.com/chunhaoxx/">Instagram</a>'
 
 style: light # dark (default) or light
