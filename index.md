@@ -34,7 +34,7 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 >* [Network Printer Traffic Generator](https://github.com/0x4F776C/Network-Printer-Traffic-Generator)
 >* [Python SoC Training Platform](https://github.com/0x4F776C/Python-SoC-Training-Platform)
 
-🤖 Machine Learning
+🤖 Artificial Intelligence
 >* [Machine Learning](https://github.com/0x4F776C/Machine-Learning)
 
 🦠 Malware
