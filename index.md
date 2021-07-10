@@ -10,9 +10,9 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 <p>Do take a look around as there might be things that may be able to help you!</p>
 
 ### Categories
+* Artificial Intelligence
 * Automation
 * Defensive Security
-* Machine Learning
 * Malware
 * Malware Analysis
 * Offensive Security
@@ -20,6 +20,9 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 * Docker Images
 
 # hoothoot@0x4F776C:~$ watch -n 1 ls -l /
+
+🤖 Artificial Intelligence
+>* [Machine Learning](https://github.com/0x4F776C/Machine-Learning)
 
 ⚙️ Automation
 >* [Chocolatey4Free](https://github.com/0x4F776C/Chocolatey4Free)
@@ -33,9 +36,6 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 🛡️ Defensive Security
 >* [Network Printer Traffic Generator](https://github.com/0x4F776C/Network-Printer-Traffic-Generator)
 >* [Python SoC Training Platform](https://github.com/0x4F776C/Python-SoC-Training-Platform)
-
-🤖 Artificial Intelligence
->* [Machine Learning](https://github.com/0x4F776C/Machine-Learning)
 
 🦠 Malware
 >* [Windows Malware Dropper](https://github.com/0x4F776C/Windows-Malware-Dropper)
