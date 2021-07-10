@@ -12,6 +12,7 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 ### Categories
 * Automation
 * Defensive Security
+* Machine Learning
 * Malware
 * Malware Analysis
 * Offensive Security
@@ -20,7 +21,7 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 
 # hoothoot@0x4F776C:~$ watch -n 1 ls -l /
 
-🤖 Automation
+⚙️ Automation
 >* [Chocolatey4Free](https://github.com/0x4F776C/Chocolatey4Free)
 >* [Docker](https://github.com/0x4F776C/Docker)
 >>* [Docker x Vagrant](https://github.com/0x4F776C/Docker-x-Vagrant)
@@ -32,6 +33,9 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 🛡️ Defensive Security
 >* [Network Printer Traffic Generator](https://github.com/0x4F776C/Network-Printer-Traffic-Generator)
 >* [Python SoC Training Platform](https://github.com/0x4F776C/Python-SoC-Training-Platform)
+
+🤖 Machine Learning
+>* [Machine Learning](https://github.com/0x4F776C/Machine-Learning)
 
 🦠 Malware
 >* [Windows Malware Dropper](https://github.com/0x4F776C/Windows-Malware-Dropper)
@@ -47,7 +51,7 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 >* [Deeplink Reverse TCP](https://github.com/0x4F776C/Deeplink-Reverse-TCP)
 >* [PowerSnail](https://github.com/0x4F776C/PowerSnail)
 
-⚙️ Setup Guides
+📖 Setup Guides
 >* [Chocolatey](https://github.com/0x4F776C/Chocolatey)
 >* [PolarProxy x INetSim](https://github.com/0x4F776C/PolarProxy-x-INetSim)
 >* [Windows OS](https://github.com/0x4F776C/Windows-OS)
