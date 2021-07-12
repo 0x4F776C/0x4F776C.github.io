@@ -23,7 +23,8 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 
 🤖 Artificial Intelligence
 >* [Machine Learning](https://github.com/0x4F776C/Machine-Learning)
->>* [Code with Mosh (Machine Learning with Python)](https://github.com/0x4F776C/Machine-Learning/tree/main/Code-with-Mosh-YT)
+>>* [Code with Mosh (Machine Learning with Python)](https://github.com/0x4F776C/Machine-Learning/tree/main/Code-with-Mosh)
+>>* [Machine Learning Master](https://github.com/0x4F776C/Machine-Learning/tree/main/Machine-Learning-Mastery)
 
 ⚙️ Automation
 >* [Chocolatey4Free](https://github.com/0x4F776C/Chocolatey4Free)
