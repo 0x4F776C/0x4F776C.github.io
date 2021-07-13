@@ -66,5 +66,4 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 
 🐳 Docker Images
 >* [Kali Linux for IMUNES](https://hub.docker.com/r/0x4f776c/imunes-kali)
->* [Ubuntu 18.04 for IMUNES](https://hub.docker.com/r/0x4f776c/imunes-node)
 >* [Honeyd for IMUNES](https://hub.docker.com/r/0x4f776c/imunes-honeyd)
