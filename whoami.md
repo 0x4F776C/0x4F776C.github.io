@@ -5,7 +5,9 @@ permalink: /whoami
 ---
 # hoothoot@0x4F776C:~$ whoami
 
-<img src="https://github.com/0x4F776C/0x4F776C.github.io/blob/master/image/me.jpeg">
+<img src="https://raw.githubusercontent.com/0x4F776C/0x4F776C.github.io/master/image/me.jpeg">
+
+![me](https://raw.githubusercontent.com/0x4F776C/0x4F776C.github.io/master/image/me.jpeg)
 
 **Name**: Lee Chun Hao
 
