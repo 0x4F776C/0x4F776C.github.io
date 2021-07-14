@@ -3,27 +3,32 @@ title: /whoami
 layout: whoami
 permalink: /whoami
 ---
-<h1>hoothoot@0x4F776C:~$ whoami</h1>
-<br>
+# hoothoot@0x4F776C:~$ whoami
 
-<img src="/image/me.jpeg" alt="me">
+![me](https://github.com/0x4F776C/0x4F776C.github.io/blob/master/image/me.jpeg)
 
-<h2>Name: Lee Chun Hao</h2>
-<p>Occupation: Prospective Computer Science Student | NUS</p>
-<br>
-<ul>
-	<p>Skill Areas</p>
-	<li>Penetration Testing</li>
-	<li>Red Teamer</li>
-	<li>Malware Analysis</li>
-	<li>Reverse Engineering</li>
-	<li>Network Security Engineering</li>
-	<li>System Administration</li>
-	<li>Network Administration</li>
-</ul>
-<br>
-<ul>
-	<p>Hobbies</p>
-	<li>Workout</li>
-	<li>Badminton</li>
-</ul>
+**Name: Lee Chun Hao**
+
+Occupation: Prospective Computer Science Student | NUS
+
+<details>
+	<summary>Skills Area</summary>
+	
+>* Penetration Testing
+>* Red Teaming
+>* Malware Analysis
+>* Reverse Engineering
+>* Network Security Engineering
+>* System Administration
+>* Network Administration
+>* CI/CD Software Engineering
+>* Software Development
+>* Malware Development
+
+</details>
+
+`Hobbies`
+
+* Badminton
+* Swimming
+* Jogging
