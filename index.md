@@ -65,6 +65,6 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 >* [Honeyd Configs](https://github.com/0x4F776C/Honeyd-Configs)
 
 🐳 Docker Images
->* [Kali Linux for IMUNES](https://hub.docker.com/r/0x4f776c/imunes-kali)
->* [Honeyd for IMUNES](https://hub.docker.com/r/0x4f776c/imunes-honeyd)
+>* [Kali Linux](https://hub.docker.com/r/0x4f776c/imunes-kali)
+>* [Honeyd](https://hub.docker.com/r/0x4f776c/imunes-honeyd)
 >* [OpenCV](https://hub.docker.com/r/0x4f776c/opencv)
