@@ -19,6 +19,7 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 * Programming
 * Setup Guides
 * Docker Images
+* Weird Ideas
 
 # hoothoot@0x4F776C:~$ watch -n 1 ls -l /
 
@@ -73,3 +74,6 @@ This site contains a list of index from my [GitHub](https://github.com/0x4F776C)
 >* [Honeyd](https://hub.docker.com/r/0x4f776c/imunes-honeyd)
 >* [OpenCV](https://hub.docker.com/r/0x4f776c/opencv)
 >* [ReactJS](https://hub.docker.com/r/0x4f776c/reactjs)
+
+💡 Weird Ideas
+>* [Minecraft VM Interaction](https://github.com/0x4F776C/Minecraft-VM-Interaction)
