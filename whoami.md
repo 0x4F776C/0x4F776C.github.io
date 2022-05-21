@@ -9,7 +9,7 @@ permalink: /whoami
 
 **Name**: Lee Chun Hao
 
-**Occupation**: Prospective Computer Science Student | NUS
+**Occupation**: Prospective Computer Science Student - NUS
 
 **Skills Area**
 
