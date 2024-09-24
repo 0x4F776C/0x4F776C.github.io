@@ -32,7 +32,7 @@
             <h3>{{ exploit.name }}</h3>
             <span class="category-tag">{{ exploit.category }}</span>
             <p>{{ exploit.description }}</p>
-            <button @click="openModal(exploit)" class="view-details-btn"></button>
+            <!-- <button @click="openModal(exploit)" class="view-details-btn"></button> -->
         </div>
 
         <div v-if="selectedExploit" class="modal" @click="closeModal">

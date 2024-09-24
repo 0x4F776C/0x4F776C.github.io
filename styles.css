@@ -173,6 +173,10 @@ input[type="text"] {
     margin-bottom: 5px;
 }
 
+.references ul li a {
+    color: white;
+}
+
 .repository-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -195,6 +199,10 @@ input[type="text"] {
 .repository-card h3 {
     margin-bottom: 10px;
     color: var(--highlight-color);
+}
+
+.repository-card h3 a {
+    color: var(--text-color);;
 }
 
 .repository-card p {
