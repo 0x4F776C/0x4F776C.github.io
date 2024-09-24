@@ -27,10 +27,6 @@ createApp({
         const repositories = ref([])
         const showRepositories = ref(false)
 
-        // const categories = computed(() => {
-        //     const categorySet = new Set(allExploits.value.map(e => e.category))
-        //     return Array.from(categorySet)
-        // })
         const categories = computed(() => {
             const categoryCounts = allExploits.value.reduce((acc, exploit) => {
                 acc[exploit.category] = (acc[exploit.category] || 0) + 1;
