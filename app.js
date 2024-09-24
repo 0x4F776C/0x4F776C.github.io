@@ -7,7 +7,6 @@ createApp({
         const exploits = ref([])
         const selectedCategory = ref('')
         const errorMessage = ref('')
-        const selectedExploit = ref(null)
 
         const categories = computed(() => {
             const categorySet = new Set(allExploits.value.map(e => e.category))
@@ -33,29 +32,6 @@ createApp({
             )
         }
 
-        const openModal = (exploit) => {
-            selectedExploit.value = JSON.parse(JSON.stringify(exploit)) // Create a deep copy
-        }
-
-        const closeModal = () => {
-            selectedExploit.value = null
-        }
-
-        const addStep = () => {
-            if (selectedExploit.value) {
-                selectedExploit.value.steps.push('')
-            }
-        }
-
-        const saveChanges = () => {
-            const index = allExploits.value.findIndex(e => e.id === selectedExploit.value.id)
-            if (index !== -1) {
-                allExploits.value[index] = selectedExploit.value
-                searchExploits() // Update the displayed exploits
-            }
-            closeModal()
-        }
-
         onMounted(() => {
             loadExploits()
         })
@@ -66,12 +42,7 @@ createApp({
             searchExploits,
             categories,
             selectedCategory,
-            errorMessage,
-            selectedExploit,
-            openModal,
-            closeModal,
-            addStep,
-            saveChanges
+            errorMessage
         }
     }
 }).mount('#app')
