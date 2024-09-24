@@ -13,6 +13,7 @@
             <h1 class="text-4xl font-bold text-indigo-600">ThreatPlayground</h1>
             <nav>
                 <a href="https://github.com/0x4F776C" target="_blank" class="text-indigo-500 hover:text-indigo-700 mr-4">GitHub</a>
+                <a href="#" @click.prevent="fetchRepositories" class="text-indigo-500 hover:text-indigo-700 mr-4">My Repositories</a>
                 <a href="https://linkedin.com/in/your-linkedin" target="_blank" class="text-indigo-500 hover:text-indigo-700">LinkedIn</a>
             </nav>
         </header>
@@ -35,6 +36,7 @@
             </li>
         </ul>
 
+        <!-- Exploit Modal -->
         <div v-if="selectedExploit" @click="closeModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div @click.stop class="modal-content bg-white p-6 rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
                 <button @click="closeModal" class="close absolute top-2 right-2 text-gray-600 hover:text-gray-800">&times;</button>
@@ -57,6 +59,24 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+        </div>
+
+        <!-- Repositories Modal -->
+        <div v-if="showRepositories" @click="closeRepositoriesModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div @click.stop class="modal-content bg-white p-6 rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
+                <button @click="closeRepositoriesModal" class="close absolute top-2 right-2 text-gray-600 hover:text-gray-800">&times;</button>
+                <h2 class="text-2xl font-bold mb-4">My GitHub Repositories</h2>
+                <ul class="repo-list">
+                    <li v-for="repo in repositories" :key="repo.id" class="mb-4">
+                        <h3 class="text-xl font-semibold">{{ repo.name }}</h3>
+                        <p class="text-gray-600 mb-2">{{ repo.description }}</p>
+                        <button @click="fetchRepoTree(repo.name)" class="bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600 transition-colors duration-300">View Tree</button>
+                        <div v-if="repo.tree" class="mt-2 pl-4 border-l-2 border-gray-300">
+                            <repo-tree :tree="repo.tree"></repo-tree>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

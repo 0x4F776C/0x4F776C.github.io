@@ -1,6 +1,22 @@
 const { createApp, ref, computed, onMounted } = Vue
 
+const RepoTree = {
+    props: ['tree'],
+    template: `
+        <ul>
+            <li v-for="item in tree" :key="item.path">
+                <span v-if="item.type === 'tree'">📁 {{ item.path }}</span>
+                <span v-else>📄 {{ item.path }}</span>
+                <repo-tree v-if="item.type === 'tree'" :tree="item.children"></repo-tree>
+            </li>
+        </ul>
+    `
+}
+
 createApp({
+    components: {
+        RepoTree
+    },
     setup() {
         const searchQuery = ref('')
         const allExploits = ref([])
@@ -8,6 +24,8 @@ createApp({
         const selectedCategory = ref('')
         const errorMessage = ref('')
         const selectedExploit = ref(null)
+        const repositories = ref([])
+        const showRepositories = ref(false)
 
         const categories = computed(() => {
             const categorySet = new Set(allExploits.value.map(e => e.category))
@@ -41,6 +59,57 @@ createApp({
             selectedExploit.value = null
         }
 
+        const fetchRepositories = async () => {
+            try {
+                const response = await axios.get('https://api.github.com/users/0x4F776C/repos')
+                repositories.value = response.data
+                showRepositories.value = true
+            } catch (error) {
+                console.error('Error fetching repositories:', error)
+                errorMessage.value = 'Failed to load repositories. Please try again later.'
+            }
+        }
+
+        const closeRepositoriesModal = () => {
+            showRepositories.value = false
+        }
+
+        const fetchRepoTree = async (repoName) => {
+            try {
+                const response = await axios.get(`https://api.github.com/repos/0x4F776C/${repoName}/git/trees/main?recursive=1`)
+                const repo = repositories.value.find(r => r.name === repoName)
+                repo.tree = buildTree(response.data.tree)
+            } catch (error) {
+                console.error('Error fetching repository tree:', error)
+                errorMessage.value = 'Failed to load repository tree. Please try again later.'
+            }
+        }
+
+        const buildTree = (items) => {
+            const root = []
+            const map = {}
+
+            items.forEach(item => {
+                map[item.path] = { ...item, children: [] }
+            })
+
+            items.forEach(item => {
+                const node = map[item.path]
+                const parts = item.path.split('/')
+                if (parts.length === 1) {
+                    root.push(node)
+                } else {
+                    const parentPath = parts.slice(0, -1).join('/')
+                    const parent = map[parentPath]
+                    if (parent) {
+                        parent.children.push(node)
+                    }
+                }
+            })
+
+            return root
+        }
+
         onMounted(() => {
             loadExploits()
         })
@@ -54,7 +123,12 @@ createApp({
             errorMessage,
             selectedExploit,
             openModal,
-            closeModal
+            closeModal,
+            repositories,
+            showRepositories,
+            fetchRepositories,
+            closeRepositoriesModal,
+            fetchRepoTree
         }
     }
 }).mount('#app')
