@@ -4,34 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ThreatPlayground</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.global.prod.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
 </head>
-<body>
-    <div id="app">
-        <h1>ThreatPlayground</h1>
-        <div class="search-container">
-            <input type="text" v-model="searchQuery" @input="searchExploits" placeholder="Search for exploits...">
-            <select v-model="selectedCategory" @change="searchExploits">
+<body class="bg-gray-100">
+    <div id="app" class="container mx-auto p-4">
+        <header class="mb-8 flex justify-between items-center">
+            <h1 class="text-4xl font-bold text-indigo-600">ThreatPlayground</h1>
+            <nav>
+                <a href="https://github.com/0x4F776C" target="_blank" class="text-indigo-500 hover:text-indigo-700 mr-4">GitHub</a>
+                <a href="https://linkedin.com/in/your-linkedin" target="_blank" class="text-indigo-500 hover:text-indigo-700">LinkedIn</a>
+            </nav>
+        </header>
+
+        <div class="search-container mb-6">
+            <input v-model="searchQuery" @input="searchExploits" type="text" placeholder="Search exploits..." class="w-full p-2 border border-gray-300 rounded">
+            <select v-model="selectedCategory" @change="searchExploits" class="p-2 border border-gray-300 rounded">
                 <option value="">All Categories</option>
-                <option v-for="category in categories" :value="category">{{ category }}</option>
+                <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
             </select>
         </div>
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-        <ul class="exploit-list">
-            <li v-for="exploit in exploits" :key="exploit.id" class="exploit-item">
-                <h3>{{ exploit.name }} <span class="category-tag">{{ exploit.category }}</span></h3>
-                <p>{{ exploit.description }}</p>
-                <div class="steps">
-                    <h4>Exploitation Steps:</h4>
-                    <ol>
-                        <li v-for="step in exploit.steps">{{ step }}</li>
-                    </ol>
-                </div>
+
+        <p v-if="errorMessage" class="error-message mb-4">{{ errorMessage }}</p>
+
+        <ul class="exploit-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <li v-for="exploit in exploits" :key="exploit.id" @click="openModal(exploit)" class="exploit-item bg-white p-4 rounded shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
+                <h3 class="text-xl font-semibold mb-2">{{ exploit.name }}</h3>
+                <span class="category-tag">{{ exploit.category }}</span>
+                <p class="mt-2">{{ exploit.description }}</p>
             </li>
         </ul>
+
+        <div v-if="selectedExploit" @click="closeModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div @click.stop class="modal-content bg-white p-6 rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
+                <button @click="closeModal" class="close absolute top-2 right-2 text-gray-600 hover:text-gray-800">&times;</button>
+                <h2 class="text-2xl font-bold mb-4">{{ selectedExploit.name }}</h2>
+                <p class="mb-2"><strong>Category:</strong> {{ selectedExploit.category }}</p>
+                <p class="mb-4"><strong>Description:</strong> {{ selectedExploit.description }}</p>
+                <div class="steps mb-4">
+                    <h4 class="text-xl font-semibold mb-2">Exploitation Steps:</h4>
+                    <ol class="list-decimal pl-6">
+                        <li v-for="(step, index) in selectedExploit.steps" :key="index" class="mb-2">
+                            {{ step }}
+                        </li>
+                    </ol>
+                </div>
+                <div class="references mb-4">
+                    <h4 class="text-xl font-semibold mb-2">References:</h4>
+                    <ul class="list-disc pl-6">
+                        <li v-for="(reference, index) in selectedExploit.references" :key="index" class="mb-2">
+                            <a :href="reference" target="_blank" class="text-blue-500 hover:text-blue-700">{{ reference }}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.global.prod.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

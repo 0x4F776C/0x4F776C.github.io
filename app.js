@@ -7,6 +7,7 @@ createApp({
         const exploits = ref([])
         const selectedCategory = ref('')
         const errorMessage = ref('')
+        const selectedExploit = ref(null)
 
         const categories = computed(() => {
             const categorySet = new Set(allExploits.value.map(e => e.category))
@@ -17,7 +18,7 @@ createApp({
             try {
                 const response = await axios.get('exploits.json')
                 allExploits.value = response.data
-                exploits.value = allExploits.value.slice(0, 5) // Preload first 5 exploits
+                exploits.value = allExploits.value
             } catch (error) {
                 console.error('Error fetching exploits:', error)
                 errorMessage.value = 'Failed to load exploit data. Please try again later.'
@@ -32,6 +33,14 @@ createApp({
             )
         }
 
+        const openModal = (exploit) => {
+            selectedExploit.value = exploit
+        }
+
+        const closeModal = () => {
+            selectedExploit.value = null
+        }
+
         onMounted(() => {
             loadExploits()
         })
@@ -42,7 +51,10 @@ createApp({
             searchExploits,
             categories,
             selectedCategory,
-            errorMessage
+            errorMessage,
+            selectedExploit,
+            openModal,
+            closeModal
         }
     }
 }).mount('#app')
