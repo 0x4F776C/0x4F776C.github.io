@@ -347,7 +347,51 @@ input[type="text"] {
         flex-direction: column;
     }
 
+    .container {
+        padding: 15px;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #threatplayground {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    nav a {
+        margin-left: 0;
+    }
+
+    input[type="text"],
+    select {
+        width: 100%;
+    }
+
     .modal-content {
         width: 95%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #threatplayground {
+        font-size: 1.5rem;
+    }
+
+    .exploit-item {
+        padding: 15px;
+    }
+
+    .category-tag {
+        font-size: 0.7em;
     }
 }
