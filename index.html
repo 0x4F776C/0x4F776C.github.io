@@ -10,7 +10,13 @@
 </head>
 <body>
     <div id="app">
-        <h1>ThreatPlayground</h1>
+        <header>
+            <h1>ThreatPlayground</h1>
+            <nav>
+                <a href="https://github.com/0x4F776C" target="_blank">GitHub</a>
+                <a href="https://linkedin.com/in/your-linkedin" target="_blank">LinkedIn</a>
+            </nav>
+        </header>
         <div class="search-container">
             <input type="text" v-model="searchQuery" @input="searchExploits" placeholder="Search for exploits...">
             <select v-model="selectedCategory" @change="searchExploits">
@@ -20,17 +26,31 @@
         </div>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <ul class="exploit-list">
-            <li v-for="exploit in exploits" :key="exploit.id" class="exploit-item">
+            <li v-for="exploit in exploits" :key="exploit.id" class="exploit-item" @click="openModal(exploit)">
                 <h3>{{ exploit.name }} <span class="category-tag">{{ exploit.category }}</span></h3>
                 <p>{{ exploit.description }}</p>
+            </li>
+        </ul>
+
+        <!-- Modal -->
+        <div v-if="selectedExploit" class="modal" @click="closeModal">
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeModal">&times;</span>
+                <h2>{{ selectedExploit.name }}</h2>
+                <p><strong>Category:</strong> {{ selectedExploit.category }}</p>
+                <p><strong>Description:</strong> <textarea v-model="selectedExploit.description"></textarea></p>
                 <div class="steps">
                     <h4>Exploitation Steps:</h4>
                     <ol>
-                        <li v-for="step in exploit.steps">{{ step }}</li>
+                        <li v-for="(step, index) in selectedExploit.steps">
+                            <input type="text" v-model="selectedExploit.steps[index]">
+                        </li>
                     </ol>
                 </div>
-            </li>
-        </ul>
+                <button @click="addStep">Add Step</button>
+                <button @click="saveChanges">Save Changes</button>
+            </div>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>
