@@ -59,16 +59,6 @@ createApp({
             selectedExploit.value = null
         }
 
-        // const fetchRepositories = async () => {
-        //     try {
-        //         const response = await axios.get('https://api.github.com/users/0x4F776C/repos')
-        //         repositories.value = response.data
-        //         showRepositories.value = true
-        //     } catch (error) {
-        //         console.error('Error fetching repositories:', error)
-        //         errorMessage.value = 'Failed to load repositories. Please try again later.'
-        //     }
-        // }
         const fetchRepositories = async () => {
             try {
                 const response = await axios.get('https://api.github.com/users/0x4F776C/repos')
@@ -101,17 +91,6 @@ createApp({
 
         const closeRepositoriesModal = () => {
             showRepositories.value = false
-        }
-
-        const fetchRepoTree = async (repoName) => {
-            try {
-                const response = await axios.get(`https://api.github.com/repos/0x4F776C/${repoName}/git/trees/main?recursive=1`)
-                const repo = repositories.value.find(r => r.name === repoName)
-                repo.tree = buildTree(response.data.tree)
-            } catch (error) {
-                console.error('Error fetching repository tree:', error)
-                errorMessage.value = 'Failed to load repository tree. Please try again later.'
-            }
         }
 
         const buildTree = (items) => {
@@ -157,7 +136,6 @@ createApp({
             showRepositories,
             fetchRepositories,
             closeRepositoriesModal,
-            // fetchRepoTree
             toggleRepoTree
         }
     }
