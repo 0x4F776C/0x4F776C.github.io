@@ -71,7 +71,7 @@
                 <h2 class="text-2xl font-bold mb-4">My GitHub Repositories</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div v-for="repo in repositories" :key="repo.id" class="repository-card p-4 bg-gray-100 rounded-lg shadow-md">
-                        <h3 class="repository-name text-xl font-semibold">{{ repo.name }}</h3>
+                        <h3 class="repository-name text-xl font-semibold"><a :href="`https://github.com/0x4F776C/${repo.name}`" target="_blank" class="repository-name">{{ repo.name }}</a></h3>
                         <p class="repository-description text-gray-600">{{ repo.description }}</p>
                         <button @click="fetchRepoTree(repo.name)" class="view-tree-btn bg-indigo-500 text-white px-3 py-1 rounded mt-4 hover:bg-indigo-600 transition-colors duration-300">
                             View Tree
@@ -83,24 +83,6 @@
                 </div>
             </div>
         </div>
-        <!--
-        <div v-if="showRepositories" @click="closeRepositoriesModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div @click.stop class="modal-content bg-white p-6 rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
-                <button @click="closeRepositoriesModal" class="close absolute top-2 right-2 text-gray-600 hover:text-gray-800">&times;</button>
-                <h2 class="text-2xl font-bold mb-4">My GitHub Repositories</h2>
-                <ul class="repo-list">
-                    <li v-for="repo in repositories" :key="repo.id" class="mb-4">
-                        <h3 class="text-xl font-semibold"><a :href="`https://github.com/0x4F776C/${repo.name}`" target="_blank" class="repository-name">{{ repo.name }}</a></h3>
-                        <p class="text-gray-600 mb-2">{{ repo.description }}</p>
-                        <button @click="fetchRepoTree(repo.name)" class="bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600 transition-colors duration-300">View Tree</button>
-                        <div v-if="repo.tree" class="mt-2 pl-4 border-l-2 border-gray-300">
-                            <repo-tree :tree="repo.tree"></repo-tree>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        -->
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.global.prod.js"></script>
