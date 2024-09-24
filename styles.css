@@ -155,35 +155,44 @@ input[type="text"] {
     background-color: rgba(0, 255, 0, 0.1);
 }
 
-.repository-name {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: var(--highlight-color);
-    cursor: pointer;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
 .repository-name:hover {
     color: var(--secondary-color);
     text-decoration: underline;
 }
 
+.repository-card {
+    background-color: var(--accent-color);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--highlight-color);
+}
+
+.repository-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.repository-name {
+    color: var(--highlight-color);
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
 .repository-description {
-    margin-top: 5px;
-    font-size: 0.9em;
-    color: #a0aec0;
+    color: var(--text-color);
+    font-size: 1em;
+    margin-top: 10px;
 }
 
 .view-tree-btn {
+    margin-top: 15px;
+    padding: 10px 15px;
+    font-weight: bold;
     background-color: var(--secondary-color);
-    color: var(--bg-color);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
+    border-radius: 6px;
+    transition: background-color 0.3s;
 }
 
 .view-tree-btn:hover {
