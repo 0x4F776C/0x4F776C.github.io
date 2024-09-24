@@ -9,13 +9,18 @@
     --error-color: #ff3333;
 }
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Fira Code', monospace;
     line-height: 1.6;
-    margin: 0;
-    padding: 20px;
     background-color: var(--bg-color);
     color: var(--text-color);
+    padding: 20px;
 }
 
 .container {
@@ -62,7 +67,8 @@ nav a:hover {
     margin-bottom: 30px;
 }
 
-input[type="text"], select {
+input[type="text"],
+select {
     padding: 12px;
     border: 1px solid var(--highlight-color);
     border-radius: 6px;
@@ -72,7 +78,8 @@ input[type="text"], select {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-input[type="text"]:focus, select:focus {
+input[type="text"]:focus,
+select:focus {
     outline: none;
     border-color: var(--secondary-color);
     box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.1);
@@ -83,7 +90,7 @@ input[type="text"] {
 }
 
 .error-message {
-    color: #ff0000;
+    color: var(--error-color);
     font-weight: bold;
     margin-bottom: 15px;
 }
@@ -93,7 +100,7 @@ input[type="text"] {
     margin-bottom: 20px;
     padding: 20px;
     border-radius: 8px;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 255, 0, 0.1);
     animation: fadeIn 0.5s ease-out;
     border: 1px solid var(--highlight-color);
@@ -105,6 +112,7 @@ input[type="text"] {
 }
 
 .category-tag {
+    display: inline-block;
     background-color: var(--secondary-color);
     color: var(--bg-color);
     padding: 4px 10px;
@@ -136,13 +144,8 @@ input[type="text"] {
     animation: slideIn 0.3s ease-out;
     border: 1px solid var(--highlight-color);
     color: var(--text-color);
-    position: inherit;
-    top: inherit;
-    transform: translateY(0);
-    z-index: 10000;
 }
 
-/* Repository styles */
 .repository-item {
     margin-bottom: 20px;
     padding: 15px;
@@ -190,7 +193,6 @@ input[type="text"] {
     background-color: var(--highlight-color);
 }
 
-/* Error message in modal */
 .modal-error {
     background-color: rgba(255, 51, 51, 0.1);
     border: 1px solid var(--error-color);
@@ -214,6 +216,19 @@ input[type="text"] {
     color: var(--highlight-color);
 }
 
+.repo-tree ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.repo-tree li {
+    margin-bottom: 5px;
+}
+
+.repo-tree span {
+    cursor: pointer;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -230,32 +245,6 @@ input[type="text"] {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Repository tree styles */
-.repo-tree ul {
-    list-style-type: none;
-    padding-left: 20px;
-}
-
-.repo-tree li {
-    margin-bottom: 5px;
-}
-
-.repo-tree span {
-    cursor: pointer;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .search-container {
-        flex-direction: column;
-    }
-
-    .modal-content {
-        width: 95%;
-    }
-}
-
-/* Terminal-like effect */
 @keyframes blink {
     0% { opacity: 0; }
     50% { opacity: 1; }
@@ -268,7 +257,6 @@ input[type="text"] {
     color: var(--highlight-color);
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -284,4 +272,14 @@ input[type="text"] {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        flex-direction: column;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
 }
