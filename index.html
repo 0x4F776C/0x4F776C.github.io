@@ -22,7 +22,7 @@
             <input v-model="searchQuery" @input="searchExploits" type="text" placeholder="Search exploits...">
             <select v-model="selectedCategory" @change="searchExploits">
                 <option value="">All Categories</option>
-                <option v-for="category in categories" :key="category.name" :value="category.name">{{ category.name }} {{ category.count }}</option>
+                <option v-for="category in categories" :key="category.name" :value="category.name">{{ category.name }} ({{ category.count }})</option>
             </select>
         </div>
 
@@ -78,8 +78,8 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.prod.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
