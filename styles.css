@@ -1,30 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&display=swap');
+
+:root {
+    --bg-color: #0a0e17;
+    --text-color: #00ff00;
+    --accent-color: #1a1f2c;
+    --highlight-color: #00ff00;
+    --secondary-color: #0066ff;
+}
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Fira Code', monospace;
     line-height: 1.6;
     margin: 0;
     padding: 20px;
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradientBg 15s ease infinite;
-    color: #333;
-}
-
-@keyframes gradientBg {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(26, 31, 44, 0.8);
     backdrop-filter: blur(10px);
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 255, 0, 0.1);
+    border: 1px solid var(--highlight-color);
 }
 
 header {
@@ -37,19 +38,21 @@ header {
 #threatplayground {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #4c51bf;
+    color: var(--highlight-color);
+    text-shadow: 0 0 10px var(--highlight-color);
 }
 
 nav a {
     margin-left: 15px;
     text-decoration: none;
-    color: #4c51bf;
+    color: var(--secondary-color);
     font-weight: 600;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 nav a:hover {
-    color: #434190;
+    color: var(--highlight-color);
+    text-shadow: 0 0 5px var(--highlight-color);
 }
 
 .search-container {
@@ -60,16 +63,18 @@ nav a:hover {
 
 input[type="text"], select {
     padding: 12px;
-    border: 1px solid #d2d6dc;
+    border: 1px solid var(--highlight-color);
     border-radius: 6px;
     font-size: 16px;
+    background-color: var(--accent-color);
+    color: var(--text-color);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 input[type="text"]:focus, select:focus {
     outline: none;
-    border-color: #4c51bf;
-    box-shadow: 0 0 0 3px rgba(76, 81, 191, 0.1);
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.1);
 }
 
 input[type="text"] {
@@ -77,29 +82,30 @@ input[type="text"] {
 }
 
 .error-message {
-    color: #e53e3e;
+    color: #ff0000;
     font-weight: bold;
     margin-bottom: 15px;
 }
 
 .exploit-item {
-    background-color: #ffffff;
+    background-color: var(--accent-color);
     margin-bottom: 20px;
     padding: 20px;
     border-radius: 8px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 255, 0, 0.1);
     animation: fadeIn 0.5s ease-out;
+    border: 1px solid var(--highlight-color);
 }
 
 .exploit-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 12px rgba(0, 255, 0, 0.15);
 }
 
 .category-tag {
-    background-color: #4c51bf;
-    color: white;
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 0.8em;
@@ -110,26 +116,28 @@ input[type="text"] {
 .modal {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .modal-content {
-    background-color: #ffffff;
+    background-color: var(--accent-color);
     padding: 30px;
     border-radius: 10px;
     width: 90%;
     max-width: 800px;
-    max-height: 90vh;
+    max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 20px rgba(0, 255, 0, 0.2);
     animation: slideIn 0.3s ease-out;
+    border: 1px solid var(--highlight-color);
+    color: var(--text-color);
 }
 
 .close {
-    color: #a0aec0;
+    color: var(--text-color);
     font-size: 32px;
     font-weight: bold;
     cursor: pointer;
@@ -138,7 +146,7 @@ input[type="text"] {
 }
 
 .close:hover {
-    color: #4a5568;
+    color: var(--highlight-color);
 }
 
 @keyframes fadeIn {
@@ -153,8 +161,8 @@ input[type="text"] {
 }
 
 @keyframes slideIn {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* Repository tree styles */
@@ -180,4 +188,35 @@ input[type="text"] {
     .modal-content {
         width: 95%;
     }
+}
+
+/* Terminal-like effect */
+@keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.terminal-cursor::after {
+    content: '█';
+    animation: blink 1s infinite;
+    color: var(--highlight-color);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--highlight-color);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
 }
