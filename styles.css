@@ -116,6 +116,7 @@ input[type="text"] {
 
 .modal {
     position: fixed;
+    z-index: 9999;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.8);
     display: flex;
@@ -138,6 +139,7 @@ input[type="text"] {
     position: inherit;
     top: inherit;
     transform: translateY(0);
+    z-index: 10000;
 }
 
 /* Repository styles */
