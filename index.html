@@ -27,7 +27,8 @@
 
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-        <div v-for="exploit in exploits" :key="exploit.id" class="exploit-item">
+        <!-- <div v-for="exploit in exploits" :key="exploit.id" class="exploit-item"> -->
+        <div class="exploit-item" v-for="exploit in exploits" :key="exploit.id" @click="openModal(exploit)">
             <h3>{{ exploit.name }}</h3>
             <span class="category-tag">{{ exploit.category }}</span>
             <p>{{ exploit.description }}</p>
@@ -35,6 +36,7 @@
         </div>
 
         <div v-if="selectedExploit" class="modal" @click="closeModal">
+            <!--
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeModal">&times;</span>
                 <h2>{{ selectedExploit.name }}</h2>
@@ -55,12 +57,34 @@
                     </ul>
                 </div>
             </div>
+            -->
+            <div class="modal-content" @click.stop="">
+                <span class="close" @click="closeModal">&times;</span>
+                <h2>{{ selectedExploit.name }}</h2>
+                <p><strong>Category:</strong> {{ selectedExploit.category }}</p>
+                <p><strong>Description:</strong> {{ selectedExploit.description }}</p>
+                <div class="steps">
+                  <h4>Exploitation Steps:</h4>
+                  <ol>
+                    <li v-for="step in selectedExploit.steps">{{ step }}</li>
+                  </ol>
+                </div>
+                <div class="references">
+                  <h4>References:</h4>
+                  <ul>
+                    <li v-for="reference in selectedExploit.references">
+                      <a :href="reference" target="_blank">{{ reference }}</a>
+                    </li>
+                  </ul>
+                </div>
+            </div>
         </div>
 
         <div v-if="showRepositories" class="modal" @click="closeRepositoriesModal">
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeRepositoriesModal">&times;</span>
                 <h2>My GitHub Repositories</h2>
+                <!--
                 <div class="repository-grid">
                     <div v-for="repo in repositories" :key="repo.id" class="repository-card">
                         <h3>
@@ -71,6 +95,14 @@
                         <div v-if="repo.tree" class="repo-tree">
                             <repo-tree :tree="repo.tree"></repo-tree>
                         </div>
+                    </div>
+                </div>
+                -->
+                <div class="repository-grid">
+                    <div class="repository-card" v-for="repo in repositories" :key="repo.id">
+                      <h3>{{ repo.name }}</h3>
+                      <p>{{ repo.description }}</p>
+                      <button class="view-tree-btn" @click="fetchRepoTree(repo.name)">View Tree</button>
                     </div>
                 </div>
             </div>
