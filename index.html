@@ -11,14 +11,16 @@
 <body>
     <div id="app">
         <h1>ThreatPlayground</h1>
-        <input type="text" v-model="searchQuery" @input="searchExploits" placeholder="Search for exploits...">
-        <select v-model="selectedCategory" @change="searchExploits">
-            <option value="">All Categories</option>
-            <option v-for="category in categories" :value="category">{{ category }}</option>
-        </select>
-        <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
-        <ul>
-            <li v-for="exploit in exploits" :key="exploit.id">
+        <div class="search-container">
+            <input type="text" v-model="searchQuery" @input="searchExploits" placeholder="Search for exploits...">
+            <select v-model="selectedCategory" @change="searchExploits">
+                <option value="">All Categories</option>
+                <option v-for="category in categories" :value="category">{{ category }}</option>
+            </select>
+        </div>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <ul class="exploit-list">
+            <li v-for="exploit in exploits" :key="exploit.id" class="exploit-item">
                 <h3>{{ exploit.name }} <span class="category-tag">{{ exploit.category }}</span></h3>
                 <p>{{ exploit.description }}</p>
                 <div class="steps">

@@ -1,36 +1,40 @@
-const { createApp, ref, computed } = Vue
+const { createApp, ref, computed, onMounted } = Vue
 
 createApp({
     setup() {
         const searchQuery = ref('')
+        const allExploits = ref([])
         const exploits = ref([])
         const selectedCategory = ref('')
         const errorMessage = ref('')
 
         const categories = computed(() => {
-            const categorySet = new Set(exploits.value.map(e => e.category))
+            const categorySet = new Set(allExploits.value.map(e => e.category))
             return Array.from(categorySet)
         })
 
-        const searchExploits = async () => {
-            if (searchQuery.value.length < 3 && !selectedCategory.value) return
-            errorMessage.value = '' // Clear any previous error message
+        const loadExploits = async () => {
             try {
                 const response = await axios.get('exploits.json')
-                const allExploits = response.data
-                exploits.value = allExploits.filter(exploit => 
-                    (exploit.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                    exploit.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
-                    (selectedCategory.value === '' || exploit.category === selectedCategory.value)
-                )
+                allExploits.value = response.data
+                exploits.value = allExploits.value.slice(0, 5) // Preload first 5 exploits
             } catch (error) {
                 console.error('Error fetching exploits:', error)
-                errorMessage.value = 'Failed to load exploit data. Please check the console for more details.'
+                errorMessage.value = 'Failed to load exploit data. Please try again later.'
             }
         }
 
-        // Initial data load
-        searchExploits()
+        const searchExploits = () => {
+            exploits.value = allExploits.value.filter(exploit => 
+                (exploit.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                exploit.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
+                (selectedCategory.value === '' || exploit.category === selectedCategory.value)
+            )
+        }
+
+        onMounted(() => {
+            loadExploits()
+        })
 
         return {
             searchQuery,

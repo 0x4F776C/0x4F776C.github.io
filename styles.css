@@ -15,22 +15,46 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-input[type="text"], select {
-    width: 100%;
-    padding: 10px;
+.search-container {
+    display: flex;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
-ul {
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+}
+
+.exploit-list {
     list-style-type: none;
     padding: 0;
 }
 
-li {
+.exploit-item {
     background-color: #f8f8f8;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     padding: 15px;
     border-radius: 3px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.exploit-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .category-tag {
@@ -51,4 +75,18 @@ li {
 
 .steps ol {
     margin-top: 0;
+    padding-left: 20px;
+}
+
+.steps li {
+    margin-bottom: 5px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.exploit-item {
+    animation: fadeIn 0.5s ease-in;
 }
