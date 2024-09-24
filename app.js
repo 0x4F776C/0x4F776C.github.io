@@ -133,6 +133,7 @@ createApp({
         return {
             searchQuery,
             exploits,
+            visibleExploits,
             searchExploits,
             categories,
             selectedCategory,
