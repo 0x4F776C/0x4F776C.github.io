@@ -43,6 +43,14 @@ createApp({
             }
         }
 
+        const visibleExploits = computed(() => {
+            if (searchQuery.value || selectedCategory.value) {
+                return exploits.value;
+            } else {
+                return exploits.value.slice(0, 5);  // Show only first 5 exploits
+            }
+        });
+
         const searchExploits = () => {
             exploits.value = allExploits.value.filter(exploit => 
                 (exploit.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||

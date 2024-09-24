@@ -28,7 +28,8 @@
 
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-        <div class="exploit-item" v-for="exploit in exploits" :key="exploit.id" @click="openModal(exploit)">
+        <!-- <div class="exploit-item" v-for="exploit in exploits" :key="exploit.id" @click="openModal(exploit)"> -->
+        <div class="exploit-item" v-for="exploit in visibleExploits" :key="exploit.id" @click="openModal(exploit)">
             <h3>{{ exploit.name }}</h3>
             <span class="category-tag">{{ exploit.category }}</span>
             <p>{{ exploit.description }}</p>
