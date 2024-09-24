@@ -59,14 +59,43 @@ createApp({
             selectedExploit.value = null
         }
 
+        // const fetchRepositories = async () => {
+        //     try {
+        //         const response = await axios.get('https://api.github.com/users/0x4F776C/repos')
+        //         repositories.value = response.data
+        //         showRepositories.value = true
+        //     } catch (error) {
+        //         console.error('Error fetching repositories:', error)
+        //         errorMessage.value = 'Failed to load repositories. Please try again later.'
+        //     }
+        // }
         const fetchRepositories = async () => {
             try {
                 const response = await axios.get('https://api.github.com/users/0x4F776C/repos')
-                repositories.value = response.data
+                repositories.value = response.data.map(repo => ({
+                    ...repo,
+                    showTree: false,
+                    tree: null
+                }))
                 showRepositories.value = true
             } catch (error) {
                 console.error('Error fetching repositories:', error)
                 errorMessage.value = 'Failed to load repositories. Please try again later.'
+            }
+        }
+
+        const toggleRepoTree = async (repo) => {
+            if (repo.tree) {
+                repo.showTree = !repo.showTree
+            } else {
+                try {
+                    const response = await axios.get(`https://api.github.com/repos/0x4F776C/${repo.name}/git/trees/main?recursive=1`)
+                    repo.tree = buildTree(response.data.tree)
+                    repo.showTree = true
+                } catch (error) {
+                    console.error('Error fetching repository tree:', error)
+                    errorMessage.value = 'Failed to load repository tree. Please try again later.'
+                }
             }
         }
 
@@ -128,7 +157,8 @@ createApp({
             showRepositories,
             fetchRepositories,
             closeRepositoriesModal,
-            fetchRepoTree
+            // fetchRepoTree
+            toggleRepoTree
         }
     }
 }).mount('#app')
