@@ -16,6 +16,7 @@
             <option value="">All Categories</option>
             <option v-for="category in categories" :value="category">{{ category }}</option>
         </select>
+        <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
         <ul>
             <li v-for="exploit in exploits" :key="exploit.id">
                 <h3>{{ exploit.name }} <span class="category-tag">{{ exploit.category }}</span></h3>
