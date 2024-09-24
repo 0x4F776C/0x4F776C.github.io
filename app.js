@@ -124,11 +124,26 @@ createApp({
             selectedExploit,
             openModal,
             closeModal,
-            repositories,
-            showRepositories,
+            repositories: [],
+            showRepositories: false,
+            errorMessage: '',
             fetchRepositories,
             closeRepositoriesModal,
             fetchRepoTree
+        }
+    },
+    methods: {
+        async fetchRepositories() {
+          try {
+            const response = await axios.get('https://api.github.com/users/0x4F776C/repos')
+            this.repositories = response.data
+            this.showRepositories = true
+            this.errorMessage = '' // Clear any previous error
+          } catch (error) {
+            console.error('Error fetching repositories:', error)
+            this.errorMessage = 'Failed to load repositories. Please try again later.'
+            this.showRepositories = true // Still show the modal to display the error
+          }
         }
     }
 }).mount('#app')

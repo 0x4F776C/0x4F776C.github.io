@@ -64,6 +64,7 @@
         </div>
 
         <!-- Repositories Modal -->
+        <!--
         <div v-if="showRepositories" @click="closeRepositoriesModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div @click.stop class="modal-content bg-white p-6 rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
                 <button @click="closeRepositoriesModal" class="close absolute top-2 right-2 text-gray-600 hover:text-gray-800">&times;</button>
@@ -78,6 +79,25 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+        </div>
+        -->
+        <div class="modal" v-if="showRepositories" @click="closeRepositoriesModal">
+            <div class="modal-content" @click.stop="">
+              <span class="close" @click="closeRepositoriesModal">&times;</span>
+              <h2>My GitHub Repositories</h2>
+              
+              <div v-if="errorMessage" class="modal-error">
+                {{ errorMessage }}
+              </div>
+          
+              <div v-for="repo in repositories" :key="repo.id" class="repository-item">
+                <a :href="repo.html_url" target="_blank" class="repository-name">
+                  {{ repo.name }}
+                </a>
+                <p class="repository-description">{{ repo.description }}</p>
+                <button @click="fetchRepoTree(repo.name)" class="view-tree-btn">View Tree</button>
+              </div>
             </div>
         </div>
     </div>
