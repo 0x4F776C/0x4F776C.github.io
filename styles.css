@@ -309,6 +309,28 @@ select:focus {
     cursor: pointer;
 }
 
+.code {
+    margin-top: 20px;
+}
+
+.code h4 {
+    margin-bottom: 10px;
+    font-size: clamp(1rem, 3vw, 1.2rem);
+}
+
+.code pre {
+    background-color: #1e2638;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.code code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    color: #e6e6e6;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
