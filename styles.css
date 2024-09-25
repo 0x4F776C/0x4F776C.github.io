@@ -40,7 +40,8 @@ body {
     max-width: 1200px;
     width: 95%; /* Changed from 100% to 95% */
     margin: 20px auto; /* Added top and bottom margin */
-    background-color: rgba(26, 31, 44, 0.8);
+/*     background-color: rgba(26, 31, 44, 0.8); */
+    background-color: rgba(26, 31, 44, 0.9);
     backdrop-filter: blur(10px);
     padding: clamp(15px, 3vw, 30px);
     border-radius: 10px;
