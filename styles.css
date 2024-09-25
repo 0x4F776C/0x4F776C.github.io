@@ -436,3 +436,26 @@ select:focus {
         padding: 10px;
     }
 }
+
+#backToTop {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+    border: none;
+    outline: none;
+    background-color: var(--highlight-color);
+    color: var(--bg-color);
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 18px;
+    transition: background-color 0.3s, opacity 0.3s;
+    opacity: 0.7;
+}
+  
+#backToTop:hover {
+    background-color: var(--secondary-color);
+    opacity: 1;
+}
