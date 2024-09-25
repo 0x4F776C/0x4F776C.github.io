@@ -27,7 +27,11 @@
         </header>
 
         <div class="search-container">
-            <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
+            <!-- <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware..."> -->
+            <div class="search-input-wrapper">
+                <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
+                <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn" title="Clear search">×</button>
+            </div>
             <select v-model="selectedCategory" @change="searchMalware">
                 <option value="">All Categories</option>
                 <option v-for="category in categories" :value="category.name">

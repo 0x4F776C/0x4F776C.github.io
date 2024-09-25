@@ -154,6 +154,12 @@ createApp({
             closeRepositoriesModal,
             toggleRepoTree
         }
+    },
+    methods: {
+        clearSearch() {
+            this.searchQuery = '';
+            this.searchMalware();
+        }
     }
 }).mount('#app')
 
