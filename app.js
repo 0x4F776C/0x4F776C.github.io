@@ -19,17 +19,17 @@ createApp({
     },
     setup() {
         const searchQuery = ref('')
-        const allExploits = ref([])
-        const exploits = ref([])
+        const allMalware = ref([])
+        const malware = ref([])
         const selectedCategory = ref('')
         const errorMessage = ref('')
-        const selectedExploit = ref(null)
+        const selectedMalware = ref(null)
         const repositories = ref([])
         const showRepositories = ref(false)
 
         const categories = computed(() => {
-            const categoryCounts = allExploits.value.reduce((acc, exploit) => {
-                acc[exploit.category] = (acc[exploit.category] || 0) + 1;
+            const categoryCounts = allMalware.value.reduce((acc, malware) => {
+                acc[malware.category] = (acc[malware.category] || 0) + 1;
                 return acc;
             }, {});
         
@@ -39,39 +39,39 @@ createApp({
             }));
         });
 
-        const loadExploits = async () => {
+        const loadMalware = async () => {
             try {
-                const response = await axios.get('exploits.json')
-                allExploits.value = response.data
-                exploits.value = allExploits.value
+                const response = await axios.get('malware.json')
+                allMalware.value = response.data
+                malware.value = allMalware.value
             } catch (error) {
-                console.error('Error fetching exploits:', error)
-                errorMessage.value = 'Failed to load exploit data. Please try again later.'
+                console.error('Error fetching malware:', error)
+                errorMessage.value = 'Failed to load malware data. Please try again later.'
             }
         }
 
-        const visibleExploits = computed(() => {
+        const visibleMalware = computed(() => {
             if (searchQuery.value || selectedCategory.value) {
-                return exploits.value;
+                return malware.value;
             } else {
-                return exploits.value.slice(0, 5);  // Show only first 5 exploits
+                return malware.value.slice(0, 5);  // Show only first 5 malware
             }
         });
 
-        const searchExploits = () => {
-            exploits.value = allExploits.value.filter(exploit => 
-                (exploit.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                exploit.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
-                (selectedCategory.value === '' || exploit.category === selectedCategory.value)
+        const searchMalware = () => {
+            malware.value = allMalware.value.filter(malware => 
+                (malware.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                malware.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
+                (selectedCategory.value === '' || malware.category === selectedCategory.value)
             )
         }
 
-        const openModal = (exploit) => {
-            selectedExploit.value = exploit
+        const openModal = (malware) => {
+            selectedMalware.value = malware
         }
 
         const closeModal = () => {
-            selectedExploit.value = null
+            selectedMalware.value = null
         }
 
         const fetchRepositories = async () => {
@@ -134,18 +134,18 @@ createApp({
         }
 
         onMounted(() => {
-            loadExploits()
+            loadMalware()
         })
 
         return {
             searchQuery,
-            exploits,
-            visibleExploits,
-            searchExploits,
+            malware,
+            visibleMalware,
+            searchMalware,
             categories,
             selectedCategory,
             errorMessage,
-            selectedExploit,
+            selectedMalware,
             openModal,
             closeModal,
             repositories,
