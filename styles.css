@@ -153,7 +153,8 @@ select:focus {
     animation: slideIn 0.3s ease-out;
     border: 1px solid var(--highlight-color);
     color: var(--text-color);
-    display: flex;
+    display: inherit;
+    top: inherit;
     flex-direction: column;
 }
 
