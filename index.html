@@ -22,46 +22,53 @@
             <nav>
                 <a href="#" @click.prevent="fetchRepositories">Repositories</a>
                 <a href="https://github.com/0x4F776C" target="_blank">GitHub</a>
+                <a href="https://www.instagram.com/chunhao._" target="_blank">Instagram</a>
                 <a href="https://www.linkedin.com/in/lee-chun-hao" target="_blank">LinkedIn</a>
             </nav>
         </header>
 
         <div class="search-container">
-            <input v-model="searchQuery" @input="searchExploits" type="text" placeholder="Search exploits...">
-            <select v-model="selectedCategory" @change="searchExploits">
+            <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
+            <select v-model="selectedCategory" @change="searchMalware">
                 <option value="">All Categories</option>
-                <option v-for="category in categories" :key="category.name" :value="category.name">{{ category.name }} ({{ category.count }})</option>
+                <option v-for="category in categories" :value="category.name">
+                    {{ category.name }} ({{ category.count }})
+                </option>
             </select>
         </div>
 
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-        <!-- <div class="exploit-item" v-for="exploit in exploits" :key="exploit.id" @click="openModal(exploit)"> -->
-        <div class="exploit-item" v-for="exploit in visibleExploits" :key="exploit.id" @click="openModal(exploit)">
-            <h3>{{ exploit.name }}</h3>
-            <span class="category-tag">{{ exploit.category }}</span>
-            <p>{{ exploit.description }}</p>
+        <!-- <div class="malware-item" v-for="malw in malware" :key="malware.id" @click="openModal(malw)"> -->
+        <div class="malware-item" v-for="malware in visibleMalware" :key="malware.id" @click="openModal(malware)">
+            <h3>{{ malware.name }}</h3>
+            <span class="category-tag">{{ malware.category }}</span>
+            <p>{{ malware.description }}</p>
         </div>
 
-        <div v-if="selectedExploit" class="modal" @click="closeModal">
+        <div class="modal" v-if="selectedMalware" @click="closeModal">
             <div class="modal-content" @click.stop="">
                 <span class="close" @click="closeModal">&times;</span>
-                <h2>{{ selectedExploit.name }}</h2>
-                <p><strong>Category:</strong> {{ selectedExploit.category }}</p>
-                <p><strong>Description:</strong> {{ selectedExploit.description }}</p>
+                <h2>{{ selectedMalware.name }}</h2>
+                <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
+                <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
                 <div class="steps">
-                  <h4>Exploitation Steps:</h4>
-                  <ol>
-                    <li v-for="step in selectedExploit.steps">{{ step }}</li>
-                  </ol>
+                    <h4>Malware Analysis Steps:</h4>
+                    <ol>
+                        <li v-for="step in selectedMalware.steps">{{ step }}</li>
+                    </ol>
+                </div>
+                <div class="code" v-if="selectedMalware.code">
+                    <h4>Sample Code:</h4>
+                    <pre><code>{{ selectedMalware.code }}</code></pre>
                 </div>
                 <div class="references">
-                  <h4>References:</h4>
-                  <ul>
-                    <li v-for="reference in selectedExploit.references">
-                      <a :href="reference" target="_blank">{{ reference }}</a>
-                    </li>
-                  </ul>
+                    <h4>References:</h4>
+                    <ul>
+                        <li v-for="reference in selectedMalware.references">
+                            <a :href="reference" target="_blank">{{ reference }}</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
