@@ -49,10 +49,53 @@ createApp({
             }));
         });
 
+        // const loadMalware = async () => {
+        //     try {
+        //         const response = await axios.get('malware.json')
+        //         allMalware.value = response.data
+        //         malware.value = allMalware.value
+        //     } catch (error) {
+        //         console.error('Error fetching malware:', error)
+        //         errorMessage.value = 'Failed to load malware data. Please try again later.'
+        //     }
+        // }
+
         const loadMalware = async () => {
             try {
-                const response = await axios.get('malware.json')
-                allMalware.value = response.data
+                const malwareListResponse = await axios.get('https://api.github.com/repos/0x4F776C/Malware/contents')
+                const malwareList = malwareListResponse.data.filter(item => item.type === 'dir')
+        
+                const malwareData = await Promise.all(malwareList.map(async (malware) => {
+                    const malwareName = malware.name
+                    
+                    // Fetch info.json
+                    const infoResponse = await axios.get(`https://raw.githubusercontent.com/0x4F776C/Malware/main/${malwareName}/info.json`)
+                    const info = infoResponse.data
+        
+                    // Fetch code files
+                    const codeFileResponse = await axios.get(`https://api.github.com/repos/0x4F776C/Malware/contents/${malwareName}/code`)
+                    const codeFiles = codeFileResponse.data.filter(file => 
+                        /\.(go|py|js|c|cpp|java|rb|php|cs|ts|rs|swift)$/i.test(file.name)
+                    )
+        
+                    const filesContent = await Promise.all(codeFiles.map(async (file) => {
+                        const content = await axios.get(file.download_url)
+                        return {
+                            name: file.name,
+                            content: content.data
+                        }
+                    }))
+        
+                    return {
+                        name: info.name,
+                        category: info.category,
+                        description: info.description,
+                        references: info.references,
+                        files: filesContent
+                    }
+                }))
+        
+                allMalware.value = malwareData
                 malware.value = allMalware.value
             } catch (error) {
                 console.error('Error fetching malware:', error)
