@@ -160,6 +160,7 @@ createApp({
             selectedCategory,
             errorMessage,
             selectedMalware,
+            escapeHtml,
             openModal,
             closeModal,
             matrixEnabled,
