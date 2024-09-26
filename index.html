@@ -52,7 +52,7 @@
         </div>
 
         <div class="modal" v-if="selectedMalware" @click="closeModal">
-            <div class="modal-content" @click.stop="">
+<!--             <div class="modal-content" @click.stop="">
                 <span class="close" @click="closeModal">&times;</span>
                 <h2>{{ selectedMalware.name }}</h2>
                 <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
@@ -74,6 +74,24 @@
                             <a :href="reference" target="_blank">{{ reference }}</a>
                         </li>
                     </ul>
+                </div>
+            </div> -->
+            <div class="modal-content" @click.stop="">
+                <span class="close" @click="closeModal">&times;</span>
+                <h2>{{ selectedMalware.name }}</h2>
+                <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
+                <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
+                <div v-if="selectedMalware.references.length > 0">
+                    <h3>References:</h3>
+                    <ul>
+                        <li v-for="ref in selectedMalware.references" :key="ref">
+                            <a :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div v-for="file in selectedMalware.files" :key="file.name">
+                    <h3>{{ file.name }}</h3>
+                    <pre><code>{{ file.content }}</code></pre>
                 </div>
             </div>
         </div>
