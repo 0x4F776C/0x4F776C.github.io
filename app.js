@@ -18,6 +18,7 @@ createApp({
         RepoTree
     },
     setup() {
+        const matrixEnabled = ref(false)
         const searchQuery = ref('')
         const allMalware = ref([])
         const malware = ref([])
@@ -27,6 +28,15 @@ createApp({
         const repositories = ref([])
         const showRepositories = ref(false)
 
+        const toggleMatrix = () => {
+            matrixEnabled.value = !matrixEnabled.value
+            const canvas = document.getElementById('matrixCanvas')
+            canvas.style.display = matrixEnabled.value ? 'block' : 'none'
+            if (matrixEnabled.value) {
+                startMatrix()
+            }
+        }
+        
         const categories = computed(() => {
             const categoryCounts = allMalware.value.reduce((acc, malware) => {
                 acc[malware.category] = (acc[malware.category] || 0) + 1;
@@ -135,6 +145,7 @@ createApp({
 
         onMounted(() => {
             loadMalware()
+            document.getElementById('matrixToggle').addEventListener('click', toggleMatrix)
         })
 
         return {
@@ -152,7 +163,9 @@ createApp({
             showRepositories,
             fetchRepositories,
             closeRepositoriesModal,
-            toggleRepoTree
+            toggleRepoTree,
+            matrixEnabled,
+            toggleMatrix
         }
     },
     methods: {
