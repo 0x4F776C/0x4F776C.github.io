@@ -73,25 +73,6 @@
                   </div>
                 </div>
             </div>
-
-        <div v-if="showRepositories" class="modal" @click="closeRepositoriesModal">
-            <div class="modal-content" @click.stop>
-                <span class="close" @click="closeRepositoriesModal">&times;</span>
-                <h2>My GitHub Repositories</h2>
-                <div class="repository-grid">
-                    <div class="repository-card" v-for="repo in repositories" :key="repo.id">
-                        <h3><a :href="`https://github.com/0x4F776C/${repo.name}`" target="_blank">{{ repo.name }}</a></h3>
-                        <p>{{ repo.description }}</p>
-                        <button class="view-tree-btn" @click="toggleRepoTree(repo)">
-                            {{ repo.showTree ? 'Hide Tree' : 'View Tree' }}
-                        </button>
-                        <div class="repo-tree" v-if="repo.showTree && repo.tree">
-                            <repo-tree :tree="repo.tree"></repo-tree>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <button id="backToTop" title="Back to Top">↑</button>
