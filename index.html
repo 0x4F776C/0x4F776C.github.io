@@ -58,10 +58,10 @@
                 <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
                 <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
                 <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
-                  <h3>References:</h3>
+                  <p><strong>References:</strong></p>
                   <ul>
                     <div v-for="ref in selectedMalware.references" :key="ref">
-                      <a :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
+                      <a class="reflink" :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
                     </div>
                   </ul>
                 </div>

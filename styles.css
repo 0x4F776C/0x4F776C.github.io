@@ -237,14 +237,9 @@ select:focus {
     margin-bottom: 10px;
 }
 
-.references a {
-    color: white; /* Change hyperlink text to white */
-    text-decoration: none; /* Optional: remove underline */
-}
-
-.references {
-    list-style-type: none; /* Remove bullet points */
-    padding-left: 0; /* Remove default padding for lists */
+.reflink {
+    color: white;
+    text-decoration: none;
 }
 
 .steps, .references {
