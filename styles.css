@@ -402,6 +402,33 @@ select:focus {
     color: #e6e6e6;
 }
 
+.code-block {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    overflow-x: auto;
+}
+
+.code-block pre {
+    margin: 0;
+}
+
+.code-block code {
+    font-family: 'Fira Code', monospace;
+    color: #d4d4d4;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Syntax highlighting */
+.code-block .keyword { color: #569cd6; }
+.code-block .string { color: #ce9178; }
+.code-block .comment { color: #6a9955; }
+.code-block .function { color: #dcdcaa; }
+.code-block .number { color: #b5cea8; }
+.code-block .operator { color: #d4d4d4; }
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
