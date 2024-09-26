@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q81SBKG7V1"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 </head>
 <body>
     <canvas id="matrixCanvas"></canvas>
@@ -52,30 +54,6 @@
         </div>
 
         <div class="modal" v-if="selectedMalware" @click="closeModal">
-<!--             <div class="modal-content" @click.stop="">
-                <span class="close" @click="closeModal">&times;</span>
-                <h2>{{ selectedMalware.name }}</h2>
-                <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
-                <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
-                <div class="steps">
-                    <h4>Malware Analysis Steps:</h4>
-                    <ol>
-                        <li v-for="step in selectedMalware.steps">{{ step }}</li>
-                    </ol>
-                </div>
-                <div class="code" v-if="selectedMalware.code">
-                    <h4>Sample Code:</h4>
-                    <pre><code>{{ selectedMalware.code }}</code></pre>
-                </div>
-                <div class="references">
-                    <h4>References:</h4>
-                    <ul>
-                        <li v-for="reference in selectedMalware.references">
-                            <a :href="reference" target="_blank">{{ reference }}</a>
-                        </li>
-                    </ul>
-                </div>
-            </div> -->
             <div class="modal-content" @click.stop="">
                 <span class="close" @click="closeModal">&times;</span>
                 <h2>{{ selectedMalware.name }}</h2>
@@ -92,8 +70,7 @@
                 <div v-for="file in selectedMalware.files" :key="file.name">
                   <h3>{{ file.name }}</h3>
                   <div class="code-block">
-                  <!-- <pre><code v-html="highlightCode(file.content, getLanguage(file.name))"></code></pre> -->
-                    <pre v-html="highlightCode(file.content, getLanguage(file.name))"></pre>
+                    <pre><code :class="getLanguage(file.name)" v-html="file.content"></code></pre>
                   </div>
                 </div>
             </div>
