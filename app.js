@@ -1,4 +1,4 @@
-import { createApp, ref, computed, onMounted } from 'Vue'
+const { createApp, ref, computed, onMounted, nextTick } = Vue
 
 const RepoTree = {
     props: ['tree'],
