@@ -60,9 +60,9 @@
                 <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
                   <h3>References:</h3>
                   <ul>
-                    <li v-for="ref in selectedMalware.references" :key="ref">
+                    <div v-for="ref in selectedMalware.references" :key="ref">
                       <a :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
-                    </li>
+                    </div>
                   </ul>
                 </div>
                 <div v-for="file in selectedMalware.files" :key="file.name">
