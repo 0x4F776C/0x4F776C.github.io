@@ -1,6 +1,4 @@
 import { createApp, ref, computed, onMounted } from 'Vue'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/vs2015.css'
 
 const RepoTree = {
     props: ['tree'],
@@ -191,29 +189,34 @@ createApp({
         const getLanguage = (fileName) => {
             const extension = fileName.split('.').pop().toLowerCase();
             const languageMap = {
-                'go': 'go',
-                'py': 'python',
-                'js': 'javascript',
-                'c': 'c',
-                'cpp': 'cpp',
-                'java': 'java',
-                'rb': 'ruby',
-                'php': 'php',
-                'cs': 'csharp',
-                'ts': 'typescript',
-                'rs': 'rust',
-                'swift': 'swift'
+                'go': 'language-go',
+                'py': 'language-python',
+                'js': 'language-javascript',
+                'c': 'language-c',
+                'cpp': 'language-cpp',
+                'java': 'language-java',
+                'rb': 'language-ruby',
+                'php': 'language-php',
+                'cs': 'language-csharp',
+                'ts': 'language-typescript',
+                'rs': 'language-rust',
+                'swift': 'language-swift'
             };
-            return languageMap[extension] || 'plaintext';
+            return languageMap[extension] || 'language-plaintext';
         }
 
-        const highlightCode = (code, language) => {
-            return hljs.highlight(code, { language: language }).value;
+        const highlightAll = () => {
+            nextTick(() => {
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
+            });
         }
 
         onMounted(() => {
             loadMalware()
             document.getElementById('matrixToggle').addEventListener('click', toggleMatrix)
+            highlightAll()
         })
 
         return {
@@ -235,7 +238,7 @@ createApp({
             matrixEnabled,
             toggleMatrix,
             getLanguage,
-            highlightCode
+            highlightAll
         }
     },
     methods: {
@@ -243,6 +246,9 @@ createApp({
             this.searchQuery = '';
             this.searchMalware();
         }
+    },
+    updated() {
+        this.highlightAll();
     }
 }).mount('#app')
 
