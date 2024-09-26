@@ -136,12 +136,6 @@ createApp({
                     tree: null
                 }))
                 showRepositories.value = true
-                nextTick(() => {
-                    const modal = document.querySelector('.modal')
-                    if (modal) {
-                        modal.style.display = 'flex'
-                    }
-                })
             } catch (error) {
                 console.error('Error fetching repositories:', error)
                 errorMessage.value = 'Failed to load repositories. Please try again later.'
@@ -165,10 +159,6 @@ createApp({
 
         const closeRepositoriesModal = () => {
             showRepositories.value = false
-            const modal = document.querySelector('.modal')
-            if (modal) {
-                modal.style.display = 'none'
-            }
         }
 
         const buildTree = (items) => {
