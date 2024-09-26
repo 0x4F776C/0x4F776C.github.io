@@ -81,20 +81,21 @@
                 <h2>{{ selectedMalware.name }}</h2>
                 <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
                 <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
-                <div v-if="selectedMalware.references.length > 0">
-                    <h3>References:</h3>
-                    <ul>
-                        <li v-for="ref in selectedMalware.references" :key="ref">
-                            <a :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
-                        </li>
-                    </ul>
+                <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
+                  <h3>References:</h3>
+                  <ul>
+                    <li v-for="ref in selectedMalware.references" :key="ref">
+                      <a :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
+                    </li>
+                  </ul>
                 </div>
                 <div v-for="file in selectedMalware.files" :key="file.name">
-                    <h3>{{ file.name }}</h3>
-                    <pre><code>{{ file.content }}</code></pre>
+                  <h3>{{ file.name }}</h3>
+                  <div class="code-block">
+                    <pre><code v-html="highlightCode(file.content, getLanguage(file.name))"></code></pre>
+                  </div>
                 </div>
             </div>
-        </div>
 
         <div v-if="showRepositories" class="modal" @click="closeRepositoriesModal">
             <div class="modal-content" @click.stop>
