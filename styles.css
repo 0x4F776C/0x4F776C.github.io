@@ -242,6 +242,12 @@ select:focus {
     text-decoration: none;
 }
 
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #00ff00;
+}
+
 .steps, .references {
     margin-top: 20px;
 }
