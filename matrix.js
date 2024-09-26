@@ -1,30 +1,3 @@
-const { createApp, ref, computed, onMounted } = Vue
-
-createApp({
-    setup() {
-        const matrixEnabled = ref(false)
-
-        const toggleMatrix = () => {
-            matrixEnabled.value = !matrixEnabled.value
-            const canvas = document.getElementById('matrixCanvas')
-            canvas.style.display = matrixEnabled.value ? 'block' : 'none'
-            if (matrixEnabled.value) {
-                startMatrix()
-            }
-        }
-
-        onMounted(() => {
-            loadMalware()
-            document.getElementById('matrixToggle').addEventListener('click', toggleMatrix)
-        })
-
-        return {
-            matrixEnabled,
-            toggleMatrix
-        }
-    },
-}).mount('#app')
-
 function startMatrix() {
     const canvas = document.getElementById('matrixCanvas')
     const ctx = canvas.getContext('2d')
