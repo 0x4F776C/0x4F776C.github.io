@@ -1,54 +1,104 @@
-<div id="app" class="container">
-    <div>
-        <h1>ThreatPlayground</h1>
-        <a href="https://github.com/0x4F776C" target="_blank">GitHub</a>
-        <a href="https://www.linkedin.com/in/lee-chun-hao" target="_blank">LinkedIn</a>
-        <button id="matrixToggle">Toggle Matrix</button>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Q81SBKG7V1');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreatPlayground</title>
+    <link rel="icon" href="/resources/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+</head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q81SBKG7V1"></script>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    <div id="app" class="container">
+        <header>
+            <h1 id="threatplayground">ThreatPlayground</h1>
+            <nav>
+                <a href="#" @click.prevent="fetchRepositories">Repositories</a>
+                <a href="https://github.com/0x4F776C" target="_blank">GitHub</a>
+                <a href="https://www.linkedin.com/in/lee-chun-hao" target="_blank">LinkedIn</a>
+                <button id="matrixToggle" class="matrix-toggle">Toggle Matrix</button>
+            </nav>
+        </header>
 
-    <div class="search-container">
-        <div class="search-input-wrapper">
-            <input v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
-            <button @click="clearSearch" v-if="searchQuery">×</button>
-        </div>
-        <div class="category-filter">
-            <button @click="selectedCategory = ''" :class="{ active: selectedCategory === '' }">All Categories</button>
-            <button v-for="category in categories" :key="category.name" @click="selectedCategory = category.name" :class="{ active: selectedCategory === category.name }">
-                {{ category.name }} ({{ category.count }})
-            </button>
-        </div>
-    </div>
-
-    <p v-if="errorMessage">{{ errorMessage }}</p>
-
-    <div class="malware-item" v-for="mal in visibleMalware" :key="mal.id" @click="openModal(mal)">
-        <h3>{{ mal.name }}</h3>
-        <span class="category-tag">{{ mal.category }}</span>
-        <p>{{ mal.description }}</p>
-    </div>
-
-    <div class="modal" v-if="selectedMalware" @click="closeModal">
-        <div class="modal-content" @click.stop="">
-            <span class="close" @click="closeModal">×</span>
-            <h2>{{ selectedMalware.name }}</h2>
-            <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
-            <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
-            <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
-                <h3>References:</h3>
-                <ul>
-                    <li v-for="ref in selectedMalware.references" :key="ref">
-                        <a :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
-                    </li>
-                </ul>
+        <div class="search-container">
+            <!-- <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware..."> -->
+            <div class="search-input-wrapper">
+                <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
+                <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn" title="Clear search">×</button>
             </div>
-            <div v-for="file in selectedMalware.files" :key="file.name">
-                <h3>{{ file.name }}</h3>
-                <div class="code-block">
-                    <pre><code :class="getLanguage(file.name)">{{ file.content }}</code></pre>
+            <select v-model="selectedCategory" @change="searchMalware">
+                <option value="">All Categories</option>
+                <option v-for="category in categories" :value="category.name">
+                    {{ category.name }} ({{ category.count }})
+                </option>
+            </select>
+        </div>
+
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+        <div class="malware-item" v-for="mal in malware" :key="mal.id" @click="openModal(mal)">
+        <!-- <div class="malware-item" v-for="malware in visibleMalware" :key="malware.id" @click="openModal(malware)"> -->
+            <h3>{{ mal.name }}</h3>
+            <span class="category-tag">{{ mal.category }}</span>
+            <p>{{ mal.description }}</p>
+        </div>
+
+        <div class="modal" v-if="selectedMalware" @click="closeModal">
+            <div class="modal-content" @click.stop="">
+                <span class="close" @click="closeModal">&times;</span>
+                <h2>{{ selectedMalware.name }}</h2>
+                <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
+                <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
+                <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
+                  <h3>References:</h3>
+                  <ul>
+                    <li v-for="ref in selectedMalware.references" :key="ref">
+                      <a :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
+                    </li>
+                  </ul>
+                </div>
+                <div v-for="file in selectedMalware.files" :key="file.name">
+                  <h3>{{ file.name }}</h3>
+                  <div class="code-block">
+                    <pre><code :class="getLanguage(file.name)" v-html="file.content"></code></pre>
+                  </div>
+                </div>
+            </div>
+
+        <div v-if="showRepositories" class="modal" @click="closeRepositoriesModal">
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeRepositoriesModal">&times;</span>
+                <h2>My GitHub Repositories</h2>
+                <div class="repository-grid">
+                    <div class="repository-card" v-for="repo in repositories" :key="repo.id">
+                        <h3><a :href="`https://github.com/0x4F776C/${repo.name}`" target="_blank">{{ repo.name }}</a></h3>
+                        <p>{{ repo.description }}</p>
+                        <button class="view-tree-btn" @click="toggleRepoTree(repo)">
+                            {{ repo.showTree ? 'Hide Tree' : 'View Tree' }}
+                        </button>
+                        <div class="repo-tree" v-if="repo.showTree && repo.tree">
+                            <repo-tree :tree="repo.tree"></repo-tree>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <button id="backToTop">↑</button>
-</div>
+    <button id="backToTop" title="Back to Top">↑</button>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="app.js"></script>
+    <script src="matrix.js"></script>
+</body>
+</html>
