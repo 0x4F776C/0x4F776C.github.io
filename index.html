@@ -68,7 +68,8 @@
                 <div v-for="file in selectedMalware.files" :key="file.name">
                   <h3>{{ file.name }}</h3>
                   <div class="code-block">
-                    <pre><code :class="getLanguage(file.name)" v-html="file.content"></code></pre>
+                    <!-- <pre><code :class="getLanguage(file.name)" v-html="file.content"></code></pre> -->
+                    <pre><code :class="getLanguage(file.name)" v-html="escapeHtml(file.content)"></code></pre>
                   </div>
                 </div>
             </div>

@@ -17,7 +17,7 @@ createApp({
             if (matrixEnabled.value) {
                 startMatrix()
             }
-        }
+        };
         
         const categories = computed(() => {
             const categoryCounts = allMalware.value.reduce((acc, malware) => {
@@ -101,13 +101,22 @@ createApp({
             );
         };
 
+        const escapeHtml = (unsafe) => {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
         const openModal = (malware) => {
             selectedMalware.value = malware
-        }
+        };
 
         const closeModal = () => {
             selectedMalware.value = null
-        }
+        };
 
         const getLanguage = (fileName) => {
             const extension = fileName.split('.').pop().toLowerCase();
@@ -126,7 +135,7 @@ createApp({
                 'swift': 'language-swift'
             };
             return languageMap[extension] || 'language-plaintext';
-        }
+        };
 
         const highlightAll = () => {
             nextTick(() => {
@@ -140,7 +149,7 @@ createApp({
             loadMalware()
             document.getElementById('matrixToggle').addEventListener('click', toggleMatrix)
             highlightAll()
-        })
+        });
 
         return {
             searchQuery,
@@ -157,7 +166,7 @@ createApp({
             toggleMatrix,
             getLanguage,
             highlightAll
-        }
+        };
     },
     methods: {
         clearSearch() {
@@ -168,7 +177,7 @@ createApp({
     updated() {
         this.highlightAll();
     }
-}).mount('#app')
+}).mount('#app');
 
 const backToTopButton = document.getElementById("backToTop");
 
