@@ -1,4 +1,6 @@
-const { createApp, ref, computed, onMounted } = Vue
+import { createApp, ref, computed, onMounted } from 'Vue'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/vs2015.css'
 
 const RepoTree = {
     props: ['tree'],
@@ -48,17 +50,6 @@ createApp({
                 count: categoryCounts[category]
             }));
         });
-
-        // const loadMalware = async () => {
-        //     try {
-        //         const response = await axios.get('malware.json')
-        //         allMalware.value = response.data
-        //         malware.value = allMalware.value
-        //     } catch (error) {
-        //         console.error('Error fetching malware:', error)
-        //         errorMessage.value = 'Failed to load malware data. Please try again later.'
-        //     }
-        // }
 
         const loadMalware = async () => {
             try {
@@ -197,6 +188,29 @@ createApp({
             return root
         }
 
+        const getLanguage = (fileName) => {
+            const extension = fileName.split('.').pop().toLowerCase();
+            const languageMap = {
+                'go': 'go',
+                'py': 'python',
+                'js': 'javascript',
+                'c': 'c',
+                'cpp': 'cpp',
+                'java': 'java',
+                'rb': 'ruby',
+                'php': 'php',
+                'cs': 'csharp',
+                'ts': 'typescript',
+                'rs': 'rust',
+                'swift': 'swift'
+            };
+            return languageMap[extension] || 'plaintext';
+        }
+
+        const highlightCode = (code, language) => {
+            return hljs.highlight(code, { language: language }).value;
+        }
+
         onMounted(() => {
             loadMalware()
             document.getElementById('matrixToggle').addEventListener('click', toggleMatrix)
@@ -219,7 +233,9 @@ createApp({
             closeRepositoriesModal,
             toggleRepoTree,
             matrixEnabled,
-            toggleMatrix
+            toggleMatrix,
+            getLanguage,
+            highlightCode
         }
     },
     methods: {
