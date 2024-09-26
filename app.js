@@ -62,40 +62,51 @@ createApp({
 
         const loadMalware = async () => {
             try {
-                const malwareListResponse = await axios.get('https://api.github.com/repos/0x4F776C/Malware/contents')
-                const malwareList = malwareListResponse.data.filter(item => item.type === 'dir')
+                const repoContentsResponse = await axios.get('https://api.github.com/repos/0x4F776C/Malware/contents')
+                const directories = repoContentsResponse.data.filter(item => item.type === 'dir')
         
-                const malwareData = await Promise.all(malwareList.map(async (malware) => {
-                    const malwareName = malware.name
-                    
-                    // Fetch info.json
-                    const infoResponse = await axios.get(`https://raw.githubusercontent.com/0x4F776C/Malware/main/${malwareName}/info.json`)
-                    const info = infoResponse.data
-        
-                    // Fetch code files
-                    const codeFileResponse = await axios.get(`https://api.github.com/repos/0x4F776C/Malware/contents/${malwareName}/code`)
-                    const codeFiles = codeFileResponse.data.filter(file => 
-                        /\.(go|py|js|c|cpp|java|rb|php|cs|ts|rs|swift)$/i.test(file.name)
-                    )
-        
-                    const filesContent = await Promise.all(codeFiles.map(async (file) => {
-                        const content = await axios.get(file.download_url)
-                        return {
-                            name: file.name,
-                            content: content.data
+                const malwareData = await Promise.all(directories.map(async (dir) => {
+                    try {
+                        const dirContentsResponse = await axios.get(dir.url)
+                        const infoFile = dirContentsResponse.data.find(file => file.name === 'info.json')
+                        
+                        if (!infoFile) {
+                            console.warn(`No info.json found in ${dir.name}`)
+                            return null
                         }
-                    }))
         
-                    return {
-                        name: info.name,
-                        category: info.category,
-                        description: info.description,
-                        references: info.references,
-                        files: filesContent
+                        const infoResponse = await axios.get(infoFile.download_url)
+                        const info = infoResponse.data
+        
+                        const codeDir = dirContentsResponse.data.find(item => item.name === 'code' && item.type === 'dir')
+                        let files = []
+        
+                        if (codeDir) {
+                            const codeContentsResponse = await axios.get(codeDir.url)
+                            const codeFiles = codeContentsResponse.data.filter(file => 
+                                /\.(go|py|js|c|cpp|java|rb|php|cs|ts|rs|swift)$/i.test(file.name)
+                            )
+        
+                            files = await Promise.all(codeFiles.map(async (file) => {
+                                const content = await axios.get(file.download_url)
+                                return { name: file.name, content: content.data }
+                            }))
+                        }
+        
+                        return {
+                            name: info.name || dir.name,
+                            category: info.category,
+                            description: info.description,
+                            references: info.references,
+                            files: files
+                        }
+                    } catch (error) {
+                        console.error(`Error processing ${dir.name}:`, error)
+                        return null
                     }
                 }))
         
-                allMalware.value = malwareData
+                allMalware.value = malwareData.filter(item => item !== null)
                 malware.value = allMalware.value
             } catch (error) {
                 console.error('Error fetching malware:', error)
