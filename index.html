@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q81SBKG7V1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-Q81SBKG7V1');
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q81SBKG7V1"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ThreatPlayground</title>
     <link rel="icon" href="/resources/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css">
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <canvas id="matrixCanvas"></canvas>
     <div id="app" class="container">
         <header>
             <h1 id="threatplayground">ThreatPlayground</h1>
@@ -31,8 +32,8 @@
 
         <div class="search-container">
             <div class="search-input-wrapper">
-                <input v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
-                <span v-if="searchQuery" @click="clearSearch" class="clear-search">×</span>
+                <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
+                <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn" title="Clear search">×</button>
             </div>
             <select v-model="selectedCategory" @change="searchMalware">
                 <option value="">All Categories</option>
@@ -63,23 +64,24 @@
                 <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
                 <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
                 <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
-                    <h3>References:</h3>
-                    <ul>
-                        <li v-for="ref in selectedMalware.references" :key="ref">
-                            <a :href="ref" target="_blank">{{ ref }}</a>
-                        </li>
-                    </ul>
+                  <p><strong>References:</strong></p>
+                  <ul>
+                    <div v-for="ref in selectedMalware.references" :key="ref">
+                      <a class="reflink" :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
+                    </div>
+                  </ul>
+                  <hr>
                 </div>
                 <div v-for="file in selectedMalware.files" :key="file.name">
-                    <h3>{{ file.name }}</h3>
+                  <h3>{{ file.name }}</h3>
+                  <div class="code-block">
                     <pre><code :class="getLanguage(file.name)" v-html="escapeHtml(file.content)"></code></pre>
+                  </div>
                 </div>
             </div>
-        </div>
     </div>
 
     <button id="backToTop" title="Back to Top">↑</button>
-    <canvas id="matrixCanvas"></canvas>
 
     <script src="app.js"></script>
     <script src="matrix.js"></script>
