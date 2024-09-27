@@ -1,4 +1,4 @@
-const { createApp, ref, computed, onMounted, nextTick } = Vue
+const { createApp, ref, computed, onMounted, nextTick, watchEffect } = Vue
 
 createApp({
     setup() {
@@ -9,6 +9,11 @@ createApp({
         const selectedCategory = ref('')
         const errorMessage = ref('')
         const selectedMalware = ref(null)
+        const itemsPerPage = 10
+        const currentPage = ref(1)
+        const loading = ref(false)
+        const CACHE_KEY = 'malwareData'
+        const CACHE_EXPIRY = 60 * 60 * 1000 // 1 hour
 
         const toggleMatrix = () => {
             matrixEnabled.value = !matrixEnabled.value
@@ -17,89 +22,119 @@ createApp({
             if (matrixEnabled.value) {
                 startMatrix()
             }
-        };
+        }
         
         const categories = computed(() => {
             const categoryCounts = allMalware.value.reduce((acc, malware) => {
-                acc[malware.category] = (acc[malware.category] || 0) + 1;
-                return acc;
-            }, {});
+                acc[malware.category] = (acc[malware.category] || 0) + 1
+                return acc
+            }, {})
         
             return Object.keys(categoryCounts).map(category => ({
                 name: category,
                 count: categoryCounts[category]
-            }));
-        });
+            }))
+        })
 
         const loadMalware = async () => {
             try {
-                const repoContentsResponse = await axios.get('https://api.github.com/repos/0x4F776C/Malware/contents', {
-                    headers: { 'Accept': 'application/vnd.github.v3+json' }
-                });
-                
-                const directories = repoContentsResponse.data.filter(item => item.type === 'dir');
-                const malwareData = await Promise.all(directories.map(async (dir) => {
-                    try {
-                        const dirContentsResponse = await axios.get(dir.url);
-                        const infoFile = dirContentsResponse.data.find(file => file.name === 'info.json');
-                        if (!infoFile) {
-                            console.warn(`No info.json found in ${dir.name}`);
-                            return null;
-                        }
-                        
-                        const infoResponse = await axios.get(infoFile.download_url);
-                        const info = infoResponse.data;
-        
-                        // Proceed to fetch files only if code directory exists
-                        const codeDir = dirContentsResponse.data.find(item => item.name === 'code' && item.type === 'dir');
-                        let files = [];
-        
-                        if (codeDir) {
-                            const codeContentsResponse = await axios.get(codeDir.url);
-                            const codeFiles = codeContentsResponse.data.filter(file => /\.(go|py|js|c|cpp|java|rb|php|cs|ts|rs|swift)$/i.test(file.name));
-        
-                            files = await Promise.all(codeFiles.map(async (file) => {
-                                const content = await axios.get(file.download_url);
-                                return { name: file.name, content: content.data };
-                            }));
-                        }
-        
-                        return {
-                            name: info.name || dir.name,
-                            category: info.category,
-                            description: info.description,
-                            references: info.references,
-                            files: files
-                        };
-                    } catch (error) {
-                        console.error(`Error processing ${dir.name}:`, error);
-                        return null;
+                loading.value = true
+                // Check cache first
+                const cachedData = localStorage.getItem(CACHE_KEY)
+                if (cachedData) {
+                    const { data, timestamp } = JSON.parse(cachedData)
+                    if (Date.now() - timestamp < CACHE_EXPIRY) {
+                        allMalware.value = data
+                        malware.value = data
+                        loading.value = false
+                        return
                     }
-                }));
-        
-                allMalware.value = malwareData.filter(item => item !== null);
-                malware.value = allMalware.value;
+                }
+
+                const repoContentsResponse = await axios.get('https://api.github.com/repos/0x4F776C/Malware/contents', {
+                    headers: { 
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Authorization': `token ${process.env.GITHUB_TOKEN}` // Make sure to set this environment variable
+                    }
+                })
+                
+                const directories = repoContentsResponse.data.filter(item => item.type === 'dir')
+                const malwareData = await Promise.all(directories.map(fetchMalwareInfo))
+                
+                allMalware.value = malwareData.filter(item => item !== null)
+                malware.value = allMalware.value
+
+                // Save to cache
+                localStorage.setItem(CACHE_KEY, JSON.stringify({
+                    data: allMalware.value,
+                    timestamp: Date.now()
+                }))
             } catch (error) {
-                console.error('Error fetching malware:', error);
-                errorMessage.value = 'Failed to load malware data. Please try again later.';
+                console.error('Error fetching malware:', error)
+                errorMessage.value = 'Failed to load malware data. Please try again later.'
+            } finally {
+                loading.value = false
             }
-        };
+        }
+
+        const fetchMalwareInfo = async (dir) => {
+            try {
+                const infoResponse = await axios.get(`https://api.github.com/repos/0x4F776C/Malware/contents/${dir.name}/info.json`, {
+                    headers: { 'Authorization': `token ${process.env.GITHUB_TOKEN}` }
+                })
+                const info = JSON.parse(atob(infoResponse.data.content))
+                
+                return {
+                    name: info.name || dir.name,
+                    category: info.category,
+                    description: info.description,
+                    references: info.references,
+                    dirName: dir.name, // Store the directory name for later use
+                    files: [] // We'll load files lazily
+                }
+            } catch (error) {
+                console.error(`Error processing ${dir.name}:`, error)
+                return null
+            }
+        }
+
+        const loadCodeFiles = async (malware) => {
+            if (!malware.files || malware.files.length === 0) {
+                try {
+                    const codeDir = await axios.get(`https://api.github.com/repos/0x4F776C/Malware/contents/${malware.dirName}/code`, {
+                        headers: { 'Authorization': `token ${process.env.GITHUB_TOKEN}` }
+                    })
+                    const codeFiles = codeDir.data.filter(file => /\.(go|py|js|c|cpp|java|rb|php|cs|ts|rs|swift)$/i.test(file.name))
+        
+                    malware.files = await Promise.all(codeFiles.map(async (file) => {
+                        const content = await axios.get(file.download_url, {
+                            headers: { 'Authorization': `token ${process.env.GITHUB_TOKEN}` }
+                        })
+                        return { name: file.name, content: content.data }
+                    }))
+                } catch (error) {
+                    console.error(`Error loading code files for ${malware.name}:`, error)
+                    malware.files = []
+                }
+            }
+        }
 
         const visibleMalware = computed(() => {
             if (searchQuery.value || selectedCategory.value) {
-                return malware.value;
+                return malware.value
             } else {
-                return malware.value.slice(0, 5);  // Show only first 5 malware
+                return malware.value.slice(0, currentPage.value * itemsPerPage)
             }
-        });
+        })
 
         const searchMalware = () => {
             malware.value = allMalware.value.filter(malware => 
                 (malware.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
                  malware.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
                 (selectedCategory.value === '' || malware.category === selectedCategory.value)
-            );
-        };
+            )
+            currentPage.value = 1 // Reset to first page when searching
+        }
 
         const escapeHtml = (unsafe) => {
             return unsafe
@@ -107,19 +142,20 @@ createApp({
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        };
+                .replace(/'/g, "&#039;")
+        }
 
-        const openModal = (malware) => {
+        const openModal = async (malware) => {
             selectedMalware.value = malware
-        };
+            await loadCodeFiles(malware)
+        }
 
         const closeModal = () => {
             selectedMalware.value = null
-        };
+        }
 
         const getLanguage = (fileName) => {
-            const extension = fileName.split('.').pop().toLowerCase();
+            const extension = fileName.split('.').pop().toLowerCase()
             const languageMap = {
                 'go': 'language-go',
                 'py': 'language-python',
@@ -133,28 +169,58 @@ createApp({
                 'ts': 'language-typescript',
                 'rs': 'language-rust',
                 'swift': 'language-swift'
-            };
-            return languageMap[extension] || 'language-plaintext';
-        };
+            }
+            return languageMap[extension] || 'language-plaintext'
+        }
 
         const highlightAll = () => {
             nextTick(() => {
                 document.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightElement(block);
-                });
-            });
-        };
+                    hljs.highlightElement(block)
+                })
+            })
+        }
+
+        const loadMore = () => {
+            if (currentPage.value * itemsPerPage < malware.value.length) {
+                currentPage.value++
+            }
+        }
 
         onMounted(() => {
             loadMalware()
             document.getElementById('matrixToggle').addEventListener('click', toggleMatrix)
             highlightAll()
-        });
+
+            // Intersection Observer for infinite scrolling
+            const observer = new IntersectionObserver((entries) => {
+                const lastEntry = entries[entries.length - 1]
+                if (lastEntry.isIntersecting && !loading.value) {
+                    loadMore()
+                }
+            }, {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            })
+
+            watchEffect(() => {
+                nextTick(() => {
+                    const lastItem = document.querySelector('.malware-item:last-child')
+                    if (lastItem) observer.observe(lastItem)
+                })
+            })
+        })
+
+        watchEffect(() => {
+            if (searchQuery.value || selectedCategory.value) {
+                searchMalware()
+            }
+        })
 
         return {
             searchQuery,
-            malware,
-            visibleMalware,
+            malware: visibleMalware,
             searchMalware,
             categories,
             selectedCategory,
@@ -166,31 +232,32 @@ createApp({
             matrixEnabled,
             toggleMatrix,
             getLanguage,
-            highlightAll
-        };
+            highlightAll,
+            loading
+        }
     },
     methods: {
         clearSearch() {
-            this.searchQuery = '';
-            this.searchMalware();
+            this.searchQuery = ''
+            this.searchMalware()
         }
     },
     updated() {
-        this.highlightAll();
+        this.highlightAll()
     }
-}).mount('#app');
+}).mount('#app')
 
-const backToTopButton = document.getElementById("backToTop");
+const backToTopButton = document.getElementById("backToTop")
 
 window.onscroll = function() {
   if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-    backToTopButton.style.display = "block";
+    backToTopButton.style.display = "block"
   } else {
-    backToTopButton.style.display = "none";
+    backToTopButton.style.display = "none"
   }
-};
+}
 
 backToTopButton.onclick = function() {
-  document.body.scrollTop = 0; // For Safari
-  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-};
+  document.body.scrollTop = 0 // For Safari
+  document.documentElement.scrollTop = 0 // For Chrome, Firefox, IE and Opera
+}
