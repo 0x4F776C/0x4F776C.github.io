@@ -49,7 +49,8 @@
             <p v-if="errorMessage">{{ errorMessage }}</p>
 
             <div v-else>
-                <div v-for="mal in visibleMalware" :key="mal.id" class="malware-item" @click="openModal(mal)">
+                <!-- <div v-for="mal in visibleMalware" :key="mal.id" class="malware-item" @click="openModal(mal)"> -->
+                <div v-for="mal in malware" :key="mal.id" class="malware-item" @click="openModal(mal)">
                     <h3>{{ mal.name }}</h3>
                     <span class="category-tag">{{ mal.category }}</span>
                     <p>{{ mal.description }}</p>
