@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-Q81SBKG7V1');
     </script>
@@ -18,12 +19,13 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
+
 <body>
     <button id="backToTop" title="Back to Top">↑</button>
-    
+
     <div id="app" class="container">
         <header>
-            <h1>ThreatPlayground</h1>
+            <h1 id="threatplayground">ThreatPlayground</h1>
             <nav>
                 <a href="https://github.com/0x4F776C" target="_blank">GitHub</a>
                 <a href="https://www.linkedin.com/in/lee-chun-hao" target="_blank">LinkedIn</a>
@@ -31,7 +33,10 @@
         </header>
 
         <div class="search-container">
-            <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
+            <div class="search-input-wrapper">
+                <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
+                <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn" title="Clear search">×</button>
+            </div>
             <select v-model="selectedCategory" @change="searchMalware">
                 <option value="">All Categories</option>
                 <option v-for="category in categories" :value="category.name">
@@ -43,8 +48,10 @@
         <div v-if="isLoading" class="loading">Loading...</div>
 
         <div v-else>
-            <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+            <p v-if="errorMessage">{{ errorMessage }}</p>
+
             <div v-else>
+                <!-- <div v-for="mal in visibleMalware" :key="mal.id" class="malware-item" @click="openModal(mal)"> -->
                 <div v-for="mal in malware" :key="mal.id" class="malware-item" @click="openModal(mal)">
                     <h3>{{ mal.name }}</h3>
                     <span class="category-tag">{{ mal.category }}</span>
@@ -59,25 +66,25 @@
                 <h2>{{ selectedMalware.name }}</h2>
                 <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
                 <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
-                <div v-if="selectedMalware.references.length">
-                  <p><strong>References:</strong></p>
-                  <ul>
-                    <li v-for="ref in selectedMalware.references" :key="ref">
-                      <a class="reflink" :href="ref" target="_blank">{{ ref }}</a>
-                    </li>
-                  </ul>
-                  <hr>
+                <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
+                    <p><strong>References:</strong></p>
+                    <ul>
+                        <div v-for="ref in selectedMalware.references" :key="ref">
+                            <a class="reflink" :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
+                        </div>
+                    </ul>
+                    <hr>
                 </div>
                 <div v-for="file in selectedMalware.files" :key="file.name">
-                  <h3>{{ file.name }}</h3>
-                  <div class="code-block">
-                    <pre><code :class="getLanguage(file.name)" v-html="escapeHtml(file.content)"></code></pre>
-                  </div>
+                    <h3>{{ file.name }}</h3>
+                    <div class="code-block">
+                        <pre><code :class="getLanguage(file.name)" v-html="escapeHtml(file.content)"></code></pre>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="app.js"></script>
+        <script src="app.js"></script>
 </body>
+
 </html>
