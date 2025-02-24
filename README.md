@@ -1,5 +1,7 @@
 # ThreatPlayground
 
+[![pages-build-deployment](https://github.com/0x4F776C/0x4F776C.github.io/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/0x4F776C/0x4F776C.github.io/actions/workflows/pages/pages-build-deployment)
+
 ThreatPlayground is a web application designed to provide information about various types of malware and cybersecurity threats. It serves as an educational platform for cybersecurity enthusiasts, researchers, and professionals to explore and learn about different malware categories and their characteristics.
 
 ## Features
@@ -39,6 +41,10 @@ Based on the current implementation, here are some potential areas for future de
 
 3. **Advanced Search Options**: Enhance the search functionality with filters for date ranges, severity levels, or affected platforms.
 
+## Non-technical WIPs
+
+1. **Split CSS file**: Separate CSS files into different category to reduce clutter.
+
 ## Contributing
 
 Fork the repo or dm me to include your work! Credits will be given :)
@@ -46,10 +52,6 @@ Fork the repo or dm me to include your work! Credits will be given :)
 ## License
 
 Released under MIT license
-
----
-
-For more information, please visit the [GitHub repository](https://github.com/0x4F776C) or connect with the developer on [LinkedIn](https://www.linkedin.com/in/lee-chun-hao).
 
 ## Tools
 https://jsoneditoronline.org/
