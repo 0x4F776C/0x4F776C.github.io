@@ -60,12 +60,14 @@
             </div>
         </div>
 
+        <!-- Analysis and Reverse Engineering tabs with code blocks -->
         <div class="modal-content" @click.stop="">
             <span class="close" @click="closeModal">&times;</span>
             <h2>{{ selectedMalware.name }}</h2>
             <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
             <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
-            
+
+            <!-- References section -->
             <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
                 <p><strong>References:</strong></p>
                 <ul>
@@ -75,28 +77,21 @@
                 </ul>
                 <hr>
             </div>
-        
+
+            <!-- Tab navigation -->
             <div class="tab-navigation">
-                <button 
-                    :class="['tab-button', { active: activeTab === 'code' }]"
-                    @click="activeTab = 'code'"
-                >
+                <button :class="['tab-button', { active: activeTab === 'code' }]" @click="activeTab = 'code'">
                     Source Code
                 </button>
-                <button 
-                    :class="['tab-button', { active: activeTab === 'analysis' }]"
-                    @click="activeTab = 'analysis'"
-                >
+                <button :class="['tab-button', { active: activeTab === 'analysis' }]" @click="activeTab = 'analysis'">
                     Analysis
                 </button>
-                <button 
-                    :class="['tab-button', { active: activeTab === 'reversing' }]"
-                    @click="activeTab = 'reversing'"
-                >
+                <button :class="['tab-button', { active: activeTab === 'reversing' }]" @click="activeTab = 'reversing'">
                     Reverse Engineering
                 </button>
             </div>
-        
+
+            <!-- Code tab -->
             <div v-if="activeTab === 'code'" class="tab-content">
                 <div v-for="file in selectedMalware.files" :key="file.name">
                     <h3>{{ file.name }}</h3>
@@ -105,7 +100,8 @@
                     </div>
                 </div>
             </div>
-        
+
+            <!-- Analysis tab -->
             <div v-if="activeTab === 'analysis'" class="tab-content">
                 <div v-if="selectedMalware.analysis.steps && selectedMalware.analysis.steps.length">
                     <h3>Analysis Steps</h3>
@@ -113,7 +109,8 @@
                         <div class="step-content">
                             <h4>Step {{ index + 1 }}: {{ step.title }}</h4>
                             <p>{{ step.description }}</p>
-                            
+
+                            <!-- Code blocks for analysis -->
                             <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
                                 <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
                                     <h5 v-if="code.title">{{ code.title }}</h5>
@@ -123,7 +120,8 @@
                                     <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
                                 </div>
                             </div>
-        
+
+                            <!-- Output or results -->
                             <div v-if="step.output" class="step-output">
                                 <h5>Output:</h5>
                                 <pre class="output-block">{{ step.output }}</pre>
@@ -131,20 +129,24 @@
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- Screenshots section -->
                 <div v-if="selectedMalware.screenshots && selectedMalware.screenshots.length">
                     <h3>Analysis Screenshots</h3>
                     <div class="screenshot-grid">
-                        <div v-for="screenshot in selectedMalware.screenshots" :key="screenshot.name" class="screenshot-item">
+                        <div v-for="screenshot in selectedMalware.screenshots" :key="screenshot.name"
+                            class="screenshot-item">
                             <img :src="screenshot.url" :alt="screenshot.name" @click="openScreenshot(screenshot)">
                             <p>{{ screenshot.name }}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        
+
+            <!-- Reverse Engineering tab -->
             <div v-if="activeTab === 'reversing'" class="tab-content">
                 <div v-if="selectedMalware.analysis.reverseEngineering">
+                    <!-- Tools section -->
                     <div v-if="selectedMalware.analysis.reverseEngineering.tools.length">
                         <h3>Tools Used</h3>
                         <ul class="tools-list">
@@ -153,15 +155,16 @@
                             </li>
                         </ul>
                     </div>
-                    
+
+                    <!-- Reverse engineering steps -->
                     <div v-if="selectedMalware.analysis.reverseEngineering.steps.length">
                         <h3>Reverse Engineering Analysis</h3>
-                        <div v-for="(step, index) in selectedMalware.analysis.reverseEngineering.steps" 
-                             :key="index" 
-                             class="reversing-step">
+                        <div v-for="(step, index) in selectedMalware.analysis.reverseEngineering.steps" :key="index"
+                            class="reversing-step">
                             <h4>Step {{ index + 1 }}: {{ step.title }}</h4>
                             <p>{{ step.description }}</p>
-                            
+
+                            <!-- Code or assembly blocks -->
                             <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
                                 <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
                                     <h5>{{ code.title }}</h5>
@@ -171,12 +174,13 @@
                                     <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
                                 </div>
                             </div>
-        
+
+                            <!-- Findings or results -->
                             <div v-if="step.findings" class="step-findings">
                                 <h5>Findings:</h5>
                                 <ul>
-                                    <li v-for="(finding, findingIndex) in step.findings" 
-                                        :key="findingIndex">{{ finding }}</li>
+                                    <li v-for="(finding, findingIndex) in step.findings" :key="findingIndex">{{ finding
+                                        }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -184,8 +188,9 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <script src="app.js"></script>
-    </body>
+    <script src="app.js"></script>
+</body>
 
 </html>
