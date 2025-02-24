@@ -9,6 +9,7 @@ createApp({
         const errorMessage = ref('')
         const selectedMalware = ref(null)
         const isLoading = ref(true)
+        const activeTab = ref('code') // New ref for tab management
         
         const categories = computed(() => {
             const categoryCounts = allMalware.value.reduce((acc, malware) => {
@@ -24,7 +25,6 @@ createApp({
 
         const loadMalware = async () => {
             try {
-                // Check if cached data exists and is less than 1 hour old
                 const cachedData = localStorage.getItem('cachedMalwareData');
                 const cachedTimestamp = localStorage.getItem('cachedMalwareTimestamp');
                 
@@ -32,7 +32,7 @@ createApp({
                     const currentTime = new Date().getTime();
                     const cacheAge = currentTime - parseInt(cachedTimestamp);
                     
-                    if (cacheAge < 3600000) { // 1 hour in milliseconds
+                    if (cacheAge < 3600000) {
                         allMalware.value = JSON.parse(cachedData);
                         malware.value = allMalware.value;
                         isLoading.value = false;
@@ -40,7 +40,6 @@ createApp({
                     }
                 }
                 
-                // If no valid cache, fetch from GitHub
                 const repoContentsResponse = await axios.get('https://api.github.com/repos/0x4F776C/Malware/contents', {
                     headers: { 'Accept': 'application/vnd.github.v3+json' }
                 });
@@ -57,27 +56,63 @@ createApp({
                         
                         const infoResponse = await axios.get(infoFile.download_url);
                         const info = infoResponse.data;
-        
-                        // Proceed to fetch files only if code directory exists
+                        
+                        // Fetch code files
                         const codeDir = dirContentsResponse.data.find(item => item.name === 'code' && item.type === 'dir');
                         let files = [];
-        
+                        
                         if (codeDir) {
                             const codeContentsResponse = await axios.get(codeDir.url);
-                            const codeFiles = codeContentsResponse.data.filter(file => /\.(go|py|js|c|cpp|java|rb|php|cs|ts|rs|swift)$/i.test(file.name));
-        
+                            const codeFiles = codeContentsResponse.data.filter(file => 
+                                /\.(go|py|js|c|cpp|java|rb|php|cs|ts|rs|swift)$/i.test(file.name)
+                            );
+                            
                             files = await Promise.all(codeFiles.map(async (file) => {
                                 const content = await axios.get(file.download_url);
                                 return { name: file.name, content: content.data };
                             }));
                         }
-        
+                        
+                        // Fetch analysis files and screenshots
+                        const analysisDir = dirContentsResponse.data.find(item => item.name === 'analysis' && item.type === 'dir');
+                        let analysis = null;
+                        let analysisScreenshots = [];
+                        
+                        if (analysisDir) {
+                            const analysisContentsResponse = await axios.get(analysisDir.url);
+                            
+                            // Get analysis.json if it exists
+                            const analysisFile = analysisContentsResponse.data.find(file => file.name === 'analysis.json');
+                            if (analysisFile) {
+                                const analysisResponse = await axios.get(analysisFile.download_url);
+                                analysis = analysisResponse.data;
+                            }
+                            
+                            // Get screenshots
+                            const screenshots = analysisContentsResponse.data.filter(file => 
+                                /\.(png|jpg|jpeg|gif)$/i.test(file.name)
+                            );
+                            
+                            analysisScreenshots = screenshots.map(screenshot => ({
+                                name: screenshot.name,
+                                url: screenshot.download_url
+                            }));
+                        }
+                        
                         return {
                             name: info.name || dir.name,
                             category: info.category,
                             description: info.description,
                             references: info.references,
-                            files: files
+                            files: files,
+                            analysis: analysis || {
+                                steps: [],
+                                reverseEngineering: {
+                                    tools: [],
+                                    steps: []
+                                }
+                            },
+                            screenshots: analysisScreenshots
                         };
                     } catch (error) {
                         console.error(`Error processing ${dir.name}:`, error);
@@ -88,7 +123,6 @@ createApp({
                 allMalware.value = malwareData.filter(item => item !== null);
                 malware.value = allMalware.value;
                 
-                // Cache the fetched data
                 localStorage.setItem('cachedMalwareData', JSON.stringify(allMalware.value));
                 localStorage.setItem('cachedMalwareTimestamp', new Date().getTime().toString());
                 
@@ -104,7 +138,7 @@ createApp({
             if (searchQuery.value || selectedCategory.value) {
                 return malware.value;
             } else {
-                return malware.value.slice(0, 5);  // Show only first 5 malware
+                return malware.value.slice(0, 5);
             }
         });
 
@@ -127,10 +161,12 @@ createApp({
 
         const openModal = (malware) => {
             selectedMalware.value = malware
+            activeTab.value = 'code' // Reset to code tab when opening modal
         };
 
         const closeModal = () => {
             selectedMalware.value = null
+            activeTab.value = 'code'
         };
 
         const getLanguage = (fileName) => {
@@ -179,7 +215,8 @@ createApp({
             closeModal,
             getLanguage,
             highlightAll,
-            isLoading
+            isLoading,
+            activeTab
         };
     },
     methods: {
@@ -192,18 +229,3 @@ createApp({
         this.highlightAll()
     }
 }).mount('#app')
-
-const backToTopButton = document.getElementById("backToTop")
-
-window.onscroll = function() {
-  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-    backToTopButton.style.display = "block"
-  } else {
-    backToTopButton.style.display = "none"
-  }
-}
-
-backToTopButton.onclick = function() {
-  document.body.scrollTop = 0 // For Safari
-  document.documentElement.scrollTop = 0 // For Chrome, Firefox, IE and Opera
-}
