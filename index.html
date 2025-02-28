@@ -8,184 +8,235 @@
         gtag('js', new Date());
         gtag('config', 'G-Q81SBKG7V1');
     </script>
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q81SBKG7V1"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>ThreatPlayground</title>
-    <link rel="icon" href="/resources/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css">
-    <link rel="stylesheet" href="styles.css">
+
+    <link rel="icon" href="src/assets/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./src/assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/tokyo-night-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
-    <button id="backToTop" title="Back to Top">↑</button>
+    <div class="app-container">
+        <div id="app" class="container">
+            <header>
+                <div class="brand">
+                    <i class="fas fa-shield-alt"></i>
+                    <h1 id="threatplayground">ThreatPlayground</h1>
+                </div>
+                <nav>
+                    <a href="https://github.com/0x4F776C" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="https://www.linkedin.com/in/lee-chun-hao" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                    <button class="theme-toggle" @click="toggleTheme" title="Toggle dark/light mode">
+                        <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+                    </button>
+                </nav>
+            </header>
 
-    <div id="app" class="container">
-        <header>
-            <h1 id="threatplayground">ThreatPlayground</h1>
-            <nav>
-                <a href="https://github.com/0x4F776C" target="_blank">GitHub</a>
-                <a href="https://www.linkedin.com/in/lee-chun-hao" target="_blank">LinkedIn</a>
-            </nav>
-        </header>
-
-        <div class="search-container">
-            <div class="search-input-wrapper">
-                <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware...">
-                <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn" title="Clear search">×</button>
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware samples...">
+                    <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn" title="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="category-select-wrapper">
+                    <i class="fas fa-filter filter-icon"></i>
+                    <select v-model="selectedCategory" @change="searchMalware">
+                        <option value="">All Categories</option>
+                        <option v-for="category in categories" :value="category.name">
+                            {{ category.name }} ({{ category.count }})
+                        </option>
+                    </select>
+                </div>
             </div>
-            <select v-model="selectedCategory" @change="searchMalware">
-                <option value="">All Categories</option>
-                <option v-for="category in categories" :value="category.name">
-                    {{ category.name }} ({{ category.count }})
-                </option>
-            </select>
-        </div>
 
-        <div v-if="isLoading" class="loading">Loading...</div>
-
-        <div v-else>
-            <p v-if="errorMessage">{{ errorMessage }}</p>
+            <div v-if="isLoading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading malware samples...</p>
+            </div>
 
             <div v-else>
-                <div v-for="mal in malware" :key="mal.id" class="malware-item" @click="openModal(mal)">
-                    <h3>{{ mal.name }}</h3>
-                    <span class="category-tag">{{ mal.category }}</span>
-                    <p>{{ mal.description }}</p>
+                <div v-if="errorMessage" class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>{{ errorMessage }}</p>
+                </div>
+
+                <div v-else class="malware-grid">
+                    <div v-for="mal in malware" :key="mal.id" class="malware-card" @click="openModal(mal)">
+                        <div class="card-header">
+                            <h3>{{ mal.name }}</h3>
+                            <span class="category-tag">{{ mal.category }}</span>
+                        </div>
+                        <p class="description">{{ mal.description }}</p>
+                        <div class="card-footer">
+                            <span class="view-details">View details <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Modal -->
-        <div v-if="selectedMalware" class="modal" @click="closeModal">
-            <div class="modal-content" @click.stop="">
-                <span class="close" @click="closeModal">&times;</span>
-                <h2>{{ selectedMalware.name }}</h2>
-                <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
-                <p><strong>Description:</strong> {{ selectedMalware.description }}</p>
-
-                <!-- References section -->
-                <div v-if="selectedMalware.references && selectedMalware.references.length > 0">
-                    <p><strong>References:</strong></p>
-                    <ul>
-                        <li v-for="ref in selectedMalware.references" :key="ref">
-                            <a class="reflink" :href="ref" target="_blank" rel="noopener noreferrer">{{ ref }}</a>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
-
-                <!-- Tab navigation -->
-                <div class="tab-navigation">
-                    <button :class="['tab-button', { active: activeTab === 'code' }]" @click="activeTab = 'code'">
-                        Source Code
-                    </button>
-                    <button :class="['tab-button', { active: activeTab === 'analysis' }]"
-                        @click="activeTab = 'analysis'">
-                        Analysis
-                    </button>
-                    <button :class="['tab-button', { active: activeTab === 'reversing' }]"
-                        @click="activeTab = 'reversing'">
-                        Reverse Engineering
-                    </button>
-                </div>
-
-                <!-- Code tab -->
-                <div v-if="activeTab === 'code'" class="tab-content">
-                    <div v-for="file in selectedMalware.files" :key="file.name">
-                        <h3>{{ file.name }}</h3>
-                        <div class="code-block">
-                            <pre><code :class="getLanguage(file.name)" v-html="escapeHtml(file.content)"></code></pre>
+            <!-- Modal -->
+            <div v-if="selectedMalware" class="modal" @click="closeModal">
+                <div class="modal-content" @click.stop="">
+                    <div class="modal-header">
+                        <h2>{{ selectedMalware.name }}</h2>
+                        <span class="close" @click="closeModal"><i class="fas fa-times"></i></span>
+                    </div>
+                    
+                    <div class="modal-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
                         </div>
                     </div>
-                </div>
+                    
+                    <div class="description-section">
+                        <h3><i class="fas fa-info-circle"></i> Description</h3>
+                        <p>{{ selectedMalware.description }}</p>
+                    </div>
 
-                <!-- Analysis tab -->
-                <div v-if="activeTab === 'analysis'" class="tab-content">
-                    <div
-                        v-if="selectedMalware.analysis && selectedMalware.analysis.steps && selectedMalware.analysis.steps.length">
-                        <h3>Analysis Steps</h3>
-                        <div v-for="(step, index) in selectedMalware.analysis.steps" :key="index" class="analysis-step">
-                            <div class="step-content">
-                                <h4>Step {{ index + 1 }}: {{ step.title }}</h4>
-                                <p>{{ step.description }}</p>
+                    <!-- References section -->
+                    <div v-if="selectedMalware.references && selectedMalware.references.length > 0" class="references-section">
+                        <h3><i class="fas fa-link"></i> References</h3>
+                        <ul>
+                            <li v-for="ref in selectedMalware.references" :key="ref">
+                                <a class="reflink" :href="ref" target="_blank" rel="noopener noreferrer">
+                                    <i class="fas fa-external-link-alt"></i> {{ ref }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                                <!-- Code blocks for analysis -->
-                                <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
-                                    <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
-                                        <h5 v-if="code.title">{{ code.title }}</h5>
-                                        <div class="code-block">
-                                            <pre><code :class="getLanguage(code.language)" v-html="escapeHtml(code.content)"></code></pre>
+                    <!-- Tab navigation -->
+                    <div class="tab-navigation">
+                        <button :class="['tab-button', { active: activeTab === 'code' }]" @click="activeTab = 'code'">
+                            <i class="fas fa-code"></i> Source Code
+                        </button>
+                        <button :class="['tab-button', { active: activeTab === 'analysis' }]" @click="activeTab = 'analysis'">
+                            <i class="fas fa-microscope"></i> Analysis
+                        </button>
+                        <button :class="['tab-button', { active: activeTab === 'reversing' }]" @click="activeTab = 'reversing'">
+                            <i class="fas fa-wrench"></i> Reverse Engineering
+                        </button>
+                    </div>
+
+                    <!-- Code tab -->
+                    <div v-if="activeTab === 'code'" class="tab-content">
+                        <div v-for="file in selectedMalware.files" :key="file.name" class="file-container">
+                            <div class="file-header">
+                                <i class="fas fa-file-code"></i>
+                                <h3>{{ file.name }}</h3>
+                            </div>
+                            <div class="code-block" :data-language="getLanguage(file.name).replace('language-', '')">
+                                <pre><code :class="getLanguage(file.name)" v-html="escapeHtml(file.content)"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis tab -->
+                    <div v-if="activeTab === 'analysis'" class="tab-content">
+                        <div v-if="selectedMalware.analysis && selectedMalware.analysis.steps && selectedMalware.analysis.steps.length">
+                            <h3 class="section-title"><i class="fas fa-tasks"></i> Analysis Steps</h3>
+                            <div v-for="(step, index) in selectedMalware.analysis.steps" :key="index" class="analysis-step">
+                                <div class="step-header">
+                                    <div class="step-number">{{ index + 1 }}</div>
+                                    <h4>{{ step.title }}</h4>
+                                </div>
+                                <div class="step-content">
+                                    <p>{{ step.description }}</p>
+
+                                    <!-- Code blocks for analysis -->
+                                    <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
+                                        <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
+                                            <h5 v-if="code.title">
+                                                <i class="fas fa-chevron-right"></i> {{ code.title }}
+                                            </h5>
+                                            <div class="code-block" :data-language="code.language">
+                                                <pre><code :class="getLanguage(code.language)" v-html="escapeHtml(code.content)"></code></pre>
+                                            </div>
+                                            <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
                                         </div>
-                                        <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
+                                    </div>
+
+                                    <!-- Output or results -->
+                                    <div v-if="step.output" class="step-output">
+                                        <h5><i class="fas fa-terminal"></i> Output:</h5>
+                                        <pre class="output-block">{{ step.output }}</pre>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Output or results -->
-                                <div v-if="step.output" class="step-output">
-                                    <h5>Output:</h5>
-                                    <pre class="output-block">{{ step.output }}</pre>
+                        <!-- Screenshots section -->
+                        <div v-if="selectedMalware.screenshots && selectedMalware.screenshots.length">
+                            <h3 class="section-title"><i class="fas fa-images"></i> Analysis Screenshots</h3>
+                            <div class="screenshot-grid">
+                                <div v-for="screenshot in selectedMalware.screenshots" :key="screenshot.name" class="screenshot-item">
+                                    <img :src="screenshot.url" :alt="screenshot.name" @click="openScreenshot(screenshot)">
+                                    <p>{{ screenshot.name }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Screenshots section -->
-                    <div v-if="selectedMalware.screenshots && selectedMalware.screenshots.length">
-                        <h3>Analysis Screenshots</h3>
-                        <div class="screenshot-grid">
-                            <div v-for="screenshot in selectedMalware.screenshots" :key="screenshot.name"
-                                class="screenshot-item">
-                                <img :src="screenshot.url" :alt="screenshot.name" @click="openScreenshot(screenshot)">
-                                <p>{{ screenshot.name }}</p>
+                    <!-- Reverse Engineering tab -->
+                    <div v-if="activeTab === 'reversing'" class="tab-content">
+                        <div v-if="selectedMalware.analysis && selectedMalware.analysis.reverseEngineering">
+                            <!-- Tools section -->
+                            <div v-if="selectedMalware.analysis.reverseEngineering.tools.length">
+                                <h3 class="section-title"><i class="fas fa-tools"></i> Tools Used</h3>
+                                <ul class="tools-list">
+                                    <li v-for="tool in selectedMalware.analysis.reverseEngineering.tools" :key="tool.name">
+                                        <i class="fas fa-wrench"></i>
+                                        <strong>{{ tool.name }}</strong>: {{ tool.purpose }}
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Reverse Engineering tab -->
-                <div v-if="activeTab === 'reversing'" class="tab-content">
-                    <div v-if="selectedMalware.analysis && selectedMalware.analysis.reverseEngineering">
-                        <!-- Tools section -->
-                        <div v-if="selectedMalware.analysis.reverseEngineering.tools.length">
-                            <h3>Tools Used</h3>
-                            <ul class="tools-list">
-                                <li v-for="tool in selectedMalware.analysis.reverseEngineering.tools" :key="tool.name">
-                                    <strong>{{ tool.name }}</strong>: {{ tool.purpose }}
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Reverse engineering steps -->
-                        <div v-if="selectedMalware.analysis.reverseEngineering.steps.length">
-                            <h3>Reverse Engineering Analysis</h3>
-                            <div v-for="(step, index) in selectedMalware.analysis.reverseEngineering.steps" :key="index"
-                                class="reversing-step">
-                                <h4>Step {{ index + 1 }}: {{ step.title }}</h4>
-                                <p>{{ step.description }}</p>
-
-                                <!-- Code or assembly blocks -->
-                                <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
-                                    <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
-                                        <h5>{{ code.title }}</h5>
-                                        <div class="code-block">
-                                            <pre><code :class="getLanguage(code.language)" v-html="escapeHtml(code.content)"></code></pre>
-                                        </div>
-                                        <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
+                            <!-- Reverse engineering steps -->
+                            <div v-if="selectedMalware.analysis.reverseEngineering.steps.length">
+                                <h3 class="section-title"><i class="fas fa-search-plus"></i> Reverse Engineering Analysis</h3>
+                                <div v-for="(step, index) in selectedMalware.analysis.reverseEngineering.steps" :key="index" class="reversing-step">
+                                    <div class="step-header">
+                                        <div class="step-number">{{ index + 1 }}</div>
+                                        <h4>{{ step.title }}</h4>
                                     </div>
-                                </div>
+                                    <div class="step-content">
+                                        <p>{{ step.description }}</p>
 
-                                <!-- Findings or results -->
-                                <div v-if="step.findings" class="step-findings">
-                                    <h5>Findings:</h5>
-                                    <ul>
-                                        <li v-for="(finding, findingIndex) in step.findings" :key="findingIndex">
-                                            {{ finding }}
-                                        </li>
-                                    </ul>
+                                        <!-- Code or assembly blocks -->
+                                        <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
+                                            <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
+                                                <h5><i class="fas fa-chevron-right"></i> {{ code.title }}</h5>
+                                                <div class="code-block" :data-language="code.language">
+                                                    <pre><code :class="getLanguage(code.language)" v-html="escapeHtml(code.content)"></code></pre>
+                                                </div>
+                                                <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Findings or results -->
+                                        <div v-if="step.findings" class="step-findings">
+                                            <h5><i class="fas fa-lightbulb"></i> Findings:</h5>
+                                            <ul>
+                                                <li v-for="(finding, findingIndex) in step.findings" :key="findingIndex">
+                                                    {{ finding }}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -195,6 +246,6 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="./src/assets/app.js"></script>
 </body>
 </html>

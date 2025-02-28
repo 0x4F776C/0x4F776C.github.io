@@ -160,15 +160,28 @@ createApp({
                 .replace(/'/g, "&#039;");
         };
 
+        // Modified openModal function to lock scrolling
         const openModal = (malware) => {
             selectedMalware.value = malware
             activeTab.value = 'code' // Reset to code tab when opening modal
+            
+            // Add class to body to prevent scrolling
+            document.body.classList.add('modal-open')
+            
+            // Apply highlighting after modal is open
+            nextTick(() => {
+                highlightAll();
+            });
         };
 
+        // Modified closeModal function to re-enable scrolling
         const closeModal = () => {
             selectedMalware.value = null
             activeTab.value = 'code'
-        };
+            
+            // Remove class from body to re-enable scrolling
+            document.body.classList.remove('modal-open')
+        };     
 
         const getLanguage = (fileName) => {
             const extension = fileName.split('.').pop().toLowerCase();
@@ -252,7 +265,6 @@ createApp({
             return languageMap[extension] || 'language-plaintext';
         };
 
-
         const highlightAll = () => {
             nextTick(() => {
                 document.querySelectorAll('pre code').forEach((block) => {
@@ -261,27 +273,64 @@ createApp({
             });
         };
 
+        const darkMode = ref(localStorage.getItem('darkMode') === 'true' || window.matchMedia('(prefers-color-scheme: dark)').matches)
+
+        const applyTheme = (isDark) => {
+            if (isDark) {
+                document.documentElement.classList.add('dark-theme')
+            } else {
+                document.documentElement.classList.remove('dark-theme')
+            }
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', isDark)
+        }
+
+        const toggleTheme = () => {
+            darkMode.value = !darkMode.value
+            applyTheme(darkMode.value)
+        }
+        
+        // Add an event listener for ESC key to close modal
+        const setupKeyboardListeners = () => {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && selectedMalware.value) {
+                    closeModal();
+                }
+            });
+        };
+
         onMounted(() => {
-            loadMalware()
-            highlightAll()
+            loadMalware();
+            highlightAll();
+            setupKeyboardListeners();
+            applyTheme(darkMode.value)
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (localStorage.getItem('darkMode') === null) {
+                    darkMode.value = e.matches
+                    applyTheme(darkMode.value)
+                }
+            })
         });
 
         return {
+            escapeHtml,
             searchQuery,
+            categories,
+            selectedCategory,
             malware,
             visibleMalware,
             searchMalware,
-            categories,
-            selectedCategory,
-            errorMessage,
             selectedMalware,
-            escapeHtml,
             openModal,
             closeModal,
+            activeTab,
             getLanguage,
             highlightAll,
             isLoading,
-            activeTab
+            errorMessage,
+            darkMode,
+            toggleTheme
         };
     },
     methods: {

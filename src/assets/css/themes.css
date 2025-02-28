@@ -1,0 +1,46 @@
+/* Dark Theme Variables */
+.dark-theme {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent-primary: #3b82f6;
+    --accent-secondary: #38bdf8;
+    --accent-tertiary: #818cf8;
+    --warning: #fb923c;
+    --error: #ef4444;
+    --success: #22c55e;
+    --card-bg: #1e293b;
+    --card-border: #334155;
+    --border-color: #475569;
+    --highlight: rgba(59, 130, 246, 0.25);
+    --code-bg: #1a1b26; /* Keep the code blocks dark in both themes */
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* Theme Transition Effects */
+body, .container, .modal-content, .malware-card, .tab-button, input, select {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 1rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--highlight);
+}
