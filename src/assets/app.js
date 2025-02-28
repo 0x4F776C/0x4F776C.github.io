@@ -151,8 +151,8 @@ createApp({
                     (selectedCategory.value === '' || mal.category === selectedCategory.value)
                 )
                 .map(mal => {
-                    const truncatedDescription = mal.description.length > 120
-                        ? mal.description.substring(0, 120) + '...'
+                    const truncatedDescription = mal.description.length > 70
+                        ? mal.description.substring(0, 70) + '...'
                         : mal.description;
                     return { ...mal, description: truncatedDescription };
                 });
