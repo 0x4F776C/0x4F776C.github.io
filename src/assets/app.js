@@ -9,7 +9,7 @@ createApp({
         const errorMessage = ref('')
         const selectedMalware = ref(null)
         const isLoading = ref(true)
-        const activeTab = ref('code') // New ref for tab management
+        const activeTab = ref('code')
 
         const categories = computed(() => {
             const categoryCounts = allMalware.value.reduce((acc, malware) => {
@@ -57,7 +57,6 @@ createApp({
                         const infoResponse = await axios.get(infoFile.download_url);
                         const info = infoResponse.data;
 
-                        // Fetch code files
                         const codeDir = dirContentsResponse.data.find(item => item.name === 'code' && item.type === 'dir');
                         let files = [];
 
@@ -74,7 +73,6 @@ createApp({
                         }
 
 
-                        // Fetch analysis files and screenshots
                         const analysisDir = dirContentsResponse.data.find(item => item.name === 'analysis' && item.type === 'dir');
                         let analysis = null;
                         let analysisScreenshots = [];
@@ -82,14 +80,12 @@ createApp({
                         if (analysisDir) {
                             const analysisContentsResponse = await axios.get(analysisDir.url);
 
-                            // Get analysis.json if it exists
                             const analysisFile = analysisContentsResponse.data.find(file => file.name === 'analysis.json');
                             if (analysisFile) {
                                 const analysisResponse = await axios.get(analysisFile.download_url);
                                 analysis = analysisResponse.data;
                             }
 
-                            // Get screenshots
                             const screenshots = analysisContentsResponse.data.filter(file =>
                                 /\.(png|jpg|jpeg|gif)$/i.test(file.name)
                             );
@@ -144,19 +140,21 @@ createApp({
         });
 
         const searchMalware = () => {
-            malware.value = allMalware.value
-                .filter(mal =>
-                    (mal.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                        mal.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
-                    (selectedCategory.value === '' || mal.category === selectedCategory.value)
-                )
-                .map(mal => {
-                    const truncatedDescription = mal.description.length > 70
-                        ? mal.description.substring(0, 70) + '...'
-                        : mal.description;
-                    return { ...mal, description: truncatedDescription };
-                });
+            malware.value = allMalware.value.filter(malware =>
+                (malware.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                    malware.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
+                (selectedCategory.value === '' || malware.category === selectedCategory.value)
+            );
         };
+
+        const truncatedMalware = computed(() => {
+            return malware.value.map(mal => ({
+                ...mal,
+                truncatedDescription: mal.description.length > 70 
+                    ? mal.description.substring(0, 70) + '...' 
+                    : mal.description
+            }));
+        });
 
         const escapeHtml = (unsafe) => {
             return unsafe
@@ -167,26 +165,21 @@ createApp({
                 .replace(/'/g, "&#039;");
         };
 
-        // Modified openModal function to lock scrolling
         const openModal = (malware) => {
             selectedMalware.value = malware
-            activeTab.value = 'code' // Reset to code tab when opening modal
+            activeTab.value = 'code'
             
-            // Add class to body to prevent scrolling
             document.body.classList.add('modal-open')
             
-            // Apply highlighting after modal is open
             nextTick(() => {
                 highlightAll();
             });
         };
 
-        // Modified closeModal function to re-enable scrolling
         const closeModal = () => {
             selectedMalware.value = null
             activeTab.value = 'code'
             
-            // Remove class from body to re-enable scrolling
             document.body.classList.remove('modal-open')
         };     
 
@@ -288,7 +281,6 @@ createApp({
             } else {
                 document.documentElement.classList.remove('dark-theme')
             }
-            // Save preference to localStorage
             localStorage.setItem('darkMode', isDark)
         }
 
@@ -297,7 +289,6 @@ createApp({
             applyTheme(darkMode.value)
         }
         
-        // Add an event listener for ESC key to close modal
         const setupKeyboardListeners = () => {
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && selectedMalware.value) {
@@ -329,6 +320,7 @@ createApp({
             visibleMalware,
             searchMalware,
             selectedMalware,
+            truncatedMalware,
             openModal,
             closeModal,
             activeTab,

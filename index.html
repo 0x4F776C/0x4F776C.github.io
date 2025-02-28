@@ -74,20 +74,18 @@
                 </div>
 
                 <div v-else class="malware-grid">
-                    <div v-for="mal in malware" :key="mal.id" class="malware-card" @click="openModal(mal)">
+                    <div v-for="mal in truncatedMalware" :key="mal.id" class="malware-card" @click="openModal(mal)">
                         <div class="card-header">
                             <h3>{{ mal.name }}</h3>
                             <span class="category-tag">{{ mal.category }}</span>
                         </div>
-                        <p class="description">{{ mal.description }}</p>
-                        <div class="card-footer">
+                        <p class="description">{{ mal.truncatedDescription }}<div class="card-footer">
                             <span class="view-details">View details <i class="fas fa-arrow-right"></i></span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal -->
             <div v-if="selectedMalware" class="modal" @click="closeModal">
                 <div class="modal-content" @click.stop="">
                     <div class="modal-header">
@@ -107,7 +105,6 @@
                         <p>{{ selectedMalware.description }}</p>
                     </div>
 
-                    <!-- References section -->
                     <div v-if="selectedMalware.references && selectedMalware.references.length > 0" class="references-section">
                         <h3><i class="fas fa-link"></i> References</h3>
                         <ul>
@@ -119,7 +116,6 @@
                         </ul>
                     </div>
 
-                    <!-- Tab navigation -->
                     <div class="tab-navigation">
                         <button :class="['tab-button', { active: activeTab === 'code' }]" @click="activeTab = 'code'">
                             <i class="fas fa-code"></i> Source Code
@@ -132,7 +128,6 @@
                         </button>
                     </div>
 
-                    <!-- Code tab -->
                     <div v-if="activeTab === 'code'" class="tab-content">
                         <div v-for="file in selectedMalware.files" :key="file.name" class="file-container">
                             <div class="file-header">
@@ -145,7 +140,6 @@
                         </div>
                     </div>
 
-                    <!-- Analysis tab -->
                     <div v-if="activeTab === 'analysis'" class="tab-content">
                         <div v-if="selectedMalware.analysis && selectedMalware.analysis.steps && selectedMalware.analysis.steps.length">
                             <h3 class="section-title"><i class="fas fa-tasks"></i> Analysis Steps</h3>
@@ -157,7 +151,6 @@
                                 <div class="step-content">
                                     <p>{{ step.description }}</p>
 
-                                    <!-- Code blocks for analysis -->
                                     <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
                                         <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
                                             <h5 v-if="code.title">
@@ -170,7 +163,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Output or results -->
                                     <div v-if="step.output" class="step-output">
                                         <h5><i class="fas fa-terminal"></i> Output:</h5>
                                         <pre class="output-block">{{ step.output }}</pre>
@@ -179,7 +171,6 @@
                             </div>
                         </div>
 
-                        <!-- Screenshots section -->
                         <div v-if="selectedMalware.screenshots && selectedMalware.screenshots.length">
                             <h3 class="section-title"><i class="fas fa-images"></i> Analysis Screenshots</h3>
                             <div class="screenshot-grid">
@@ -191,10 +182,8 @@
                         </div>
                     </div>
 
-                    <!-- Reverse Engineering tab -->
                     <div v-if="activeTab === 'reversing'" class="tab-content">
                         <div v-if="selectedMalware.analysis && selectedMalware.analysis.reverseEngineering">
-                            <!-- Tools section -->
                             <div v-if="selectedMalware.analysis.reverseEngineering.tools.length">
                                 <h3 class="section-title"><i class="fas fa-tools"></i> Tools Used</h3>
                                 <ul class="tools-list">
@@ -205,7 +194,6 @@
                                 </ul>
                             </div>
 
-                            <!-- Reverse engineering steps -->
                             <div v-if="selectedMalware.analysis.reverseEngineering.steps.length">
                                 <h3 class="section-title"><i class="fas fa-search-plus"></i> Reverse Engineering Analysis</h3>
                                 <div v-for="(step, index) in selectedMalware.analysis.reverseEngineering.steps" :key="index" class="reversing-step">
@@ -216,7 +204,6 @@
                                     <div class="step-content">
                                         <p>{{ step.description }}</p>
 
-                                        <!-- Code or assembly blocks -->
                                         <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
                                             <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
                                                 <h5><i class="fas fa-chevron-right"></i> {{ code.title }}</h5>
@@ -227,7 +214,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- Findings or results -->
                                         <div v-if="step.findings" class="step-findings">
                                             <h5><i class="fas fa-lightbulb"></i> Findings:</h5>
                                             <ul>
