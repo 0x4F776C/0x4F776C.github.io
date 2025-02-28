@@ -144,11 +144,18 @@ createApp({
         });
 
         const searchMalware = () => {
-            malware.value = allMalware.value.filter(malware =>
-                (malware.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                    malware.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
-                (selectedCategory.value === '' || malware.category === selectedCategory.value)
-            );
+            malware.value = allMalware.value
+                .filter(mal =>
+                    (mal.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                        mal.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
+                    (selectedCategory.value === '' || mal.category === selectedCategory.value)
+                )
+                .map(mal => {
+                    const truncatedDescription = mal.description.length > 120
+                        ? mal.description.substring(0, 120) + '...'
+                        : mal.description;
+                    return { ...mal, description: truncatedDescription };
+                });
         };
 
         const escapeHtml = (unsafe) => {
