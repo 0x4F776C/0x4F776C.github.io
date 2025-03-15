@@ -1,6 +1,6 @@
 # ThreatPlayground
 
-[![pages-build-deployment](https://github.com/0x4F776C/0x4F776C.github.io/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/0x4F776C/0x4F776C.github.io/actions/workflows/pages/pages-build-deployment)
+[![Build and Deploy](https://github.com/0x4F776C/0x4F776C.github.io/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/0x4F776C/0x4F776C.github.io/actions/workflows/main.yml)
 
 ## About
 
