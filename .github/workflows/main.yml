@@ -23,7 +23,7 @@ jobs:
       
     - name: Build with GitHub token
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
       run: npm run build
 
     - name: Deploy
