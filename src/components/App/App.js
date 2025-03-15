@@ -1,5 +1,5 @@
-import axios from 'axios'
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue';
+import axios from 'axios';
 
 export default function setupApp() {
     const searchQuery = ref('')
