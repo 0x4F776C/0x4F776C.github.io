@@ -23,11 +23,12 @@ jobs:
       
     - name: Build with GitHub token
       env:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GHP }}
       run: npm run build
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GHP }}
         publish_dir: ./dist
+        
