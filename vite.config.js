@@ -6,9 +6,7 @@ export default defineConfig({
   base: './',
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
-    minify: 'terser',
-    sourcemap: false
+    assetsDir: 'assets'
   },
   define: {
     'window.GHP': JSON.stringify(process.env.GHP || '')

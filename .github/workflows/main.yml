@@ -19,6 +19,8 @@ jobs:
         node-version: '18'
         
     - name: Install dependencies
+      env:
+        github_token: ${{ secrets.GHP }}
       run: npm ci
       
     - name: Build with GitHub token
@@ -27,7 +29,8 @@ jobs:
       run: npm run build
 
     - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
         github_token: ${{ secrets.GHP }}
-        publish_dir: ./dist
+        folder: dist
+        branch: gh-pages
