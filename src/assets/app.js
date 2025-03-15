@@ -1,4 +1,4 @@
-const { createApp, ref, computed, onMounted, nextTick } = Vue
+const { createApp, ref, computed, onMounted, nextTick } = Vue;
 
 createApp({
     setup() {
@@ -27,12 +27,13 @@ createApp({
             try {
                 const cachedData = localStorage.getItem('cachedMalwareData');
                 const cachedTimestamp = localStorage.getItem('cachedMalwareTimestamp');
+                const CACHE_VALIDITY = 24 * 60 * 60 * 1000;
 
                 if (cachedData && cachedTimestamp) {
                     const currentTime = new Date().getTime();
                     const cacheAge = currentTime - parseInt(cachedTimestamp);
 
-                    if (cacheAge < 3600000) {
+                    if (cacheAge < CACHE_VALIDITY) {
                         allMalware.value = JSON.parse(cachedData);
                         malware.value = allMalware.value;
                         isLoading.value = false;
@@ -40,34 +41,62 @@ createApp({
                     }
                 }
 
-                const repoContentsResponse = await axios.get('https://api.github.com/repos/0x4F776C/Malware/contents', {
-                    headers: { 'Accept': 'application/vnd.github.v3+json' }
-                });
+                const github_token = process.env.GITHUB_TOKEN || '';
+                
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                
+                if (github_token) {
+                    headers['Authorization'] = `token ${github_token}`;
+                }
+
+                const fetchWithRetry = async (url, options = {}, maxRetries = 3) => {
+                    let retries = 0;
+                    
+                    while (retries < maxRetries) {
+                        try {
+                            return await axios.get(url, options);
+                        } catch (error) {
+                            const isRateLimit = error.response && error.response.status === 403 &&
+                                                error.response.headers['x-ratelimit-remaining'] === '0';
+                                                
+                            if (isRateLimit && retries < maxRetries - 1) {
+                                const delay = Math.pow(2, retries) * 1000; // Exponential backoff
+                                console.log(`Rate limited. Retrying in ${delay}ms...`);
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                                retries++;
+                            } else {
+                                throw error;
+                            }
+                        }
+                    }
+                };
+
+                const repoContentsResponse = await fetchWithRetry('https://api.github.com/repos/0x4F776C/Malware/contents', { headers });
 
                 const directories = repoContentsResponse.data.filter(item => item.type === 'dir');
                 const malwareData = await Promise.all(directories.map(async (dir) => {
                     try {
-                        const dirContentsResponse = await axios.get(dir.url);
+                        const dirContentsResponse = await fetchWithRetry(dir.url, { headers });
                         const infoFile = dirContentsResponse.data.find(file => file.name === 'info.json');
                         if (!infoFile) {
                             console.warn(`No info.json found in ${dir.name}`);
                             return null;
                         }
 
-                        const infoResponse = await axios.get(infoFile.download_url);
+                        const infoResponse = await fetchWithRetry(infoFile.download_url, { headers });
                         const info = infoResponse.data;
 
                         const codeDir = dirContentsResponse.data.find(item => item.name === 'code' && item.type === 'dir');
                         let files = [];
 
                         if (codeDir) {
-                            const codeContentsResponse = await axios.get(codeDir.url);
+                            const codeContentsResponse = await fetchWithRetry(codeDir.url, { headers });
                             const codeFiles = codeContentsResponse.data.filter(file =>
                                 /\.(go|py|js|jsx|ts|tsx|c|cpp|java|rb|php|cs|rs|swift|sh|bash|zsh|bat|cmd|ps1|html|htm|css|scss|sass|less|json|xml|yaml|yml|sql|psql|hs|ml|clj|cljc|cljs|lua|r|jl|kt|scala|dart|toml|ini|md|csv|tsv|makefile|dockerfile|gradle|groovy|asm|s|coffee)$/i.test(file.name)
                             );
 
                             files = await Promise.all(codeFiles.map(async (file) => {
-                                const content = await axios.get(file.download_url);
+                                const content = await fetchWithRetry(file.download_url, { headers });
                                 return { name: file.name, content: content.data };
                             }));
                         }
@@ -78,11 +107,11 @@ createApp({
                         let analysisScreenshots = [];
 
                         if (analysisDir) {
-                            const analysisContentsResponse = await axios.get(analysisDir.url);
+                            const analysisContentsResponse = await fetchWithRetry(analysisDir.url, { headers });
 
                             const analysisFile = analysisContentsResponse.data.find(file => file.name === 'analysis.json');
                             if (analysisFile) {
-                                const analysisResponse = await axios.get(analysisFile.download_url);
+                                const analysisResponse = await fetchWithRetry(analysisFile.download_url, { headers });
                                 analysis = analysisResponse.data;
                             }
 
@@ -125,7 +154,29 @@ createApp({
 
             } catch (error) {
                 console.error('Error fetching malware:', error);
-                errorMessage.value = 'Failed to load malware data. Please try again later.';
+                
+                if (error.response && error.response.status === 403) {
+                    const rateLimitRemaining = error.response.headers['x-ratelimit-remaining'];
+                    const rateLimitReset = error.response.headers['x-ratelimit-reset'];
+                    
+                    if (rateLimitRemaining === '0') {
+                        const resetDate = new Date(rateLimitReset * 1000);
+                        const resetTimeString = resetDate.toLocaleTimeString();
+                        
+                        errorMessage.value = `GitHub API rate limit exceeded. Limit will reset at ${resetTimeString}. Using cached data if available.`;
+                        
+                        const cachedData = localStorage.getItem('cachedMalwareData');
+                        if (cachedData) {
+                            allMalware.value = JSON.parse(cachedData);
+                            malware.value = allMalware.value;
+                            errorMessage.value += ' Using cached data for now.';
+                        }
+                    } else {
+                        errorMessage.value = 'Failed to load malware data. Please try again later.';
+                    }
+                } else {
+                    errorMessage.value = 'Failed to load malware data. Please try again later.';
+                }
             } finally {
                 isLoading.value = false;
             }
