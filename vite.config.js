@@ -6,7 +6,8 @@ export default defineConfig({
   base: '/0x4F776C.github.io/',
   resolve: {
     alias: {
-      'vue': 'vue/dist/vue.esm-bundler.js'
+      '@': '/src',
+      'vue': '/node_modules/vue/dist/vue.esm-bundler.js'
     }
   },
   define: {
