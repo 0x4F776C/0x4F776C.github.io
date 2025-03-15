@@ -3,9 +3,14 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/',
+  base: './',
   build: {
-    assetsDir: 'assets',
     outDir: 'dist',
+    assetsDir: 'assets',
+    minify: 'terser',
+    sourcemap: false
+  },
+  define: {
+    'window.GHP': JSON.stringify(process.env.GHP || '')
   }
 })
