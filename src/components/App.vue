@@ -310,6 +310,12 @@ export default {
                 
                 // Custom image renderer to handle GitHub image paths
                 renderer.image = (href, title, text) => {
+                    // Safety check - ensure href is a string
+                    if (!href || typeof href !== 'string') {
+                        console.error('Invalid image href:', href);
+                        return `<span class="image-error">Image Error</span>`;
+                    }
+                    
                     // Check if it's a relative path (not starting with http or https)
                     if (!href.startsWith('http') && !href.startsWith('data:')) {
                         // Construct GitHub raw content URL for the image
@@ -346,9 +352,13 @@ export default {
                         }
                     }
                     
+                    // Safely handle title which might be null or undefined
+                    const safeTitle = title ? title.toString() : '';
+                    const safeAlt = text ? text.toString() : 'Image';
+                    
                     // Return the HTML for the image with error handling
-                    return `<img src="${href}" alt="${text}" title="${title || ''}" 
-                            onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\'%3E%3Cpath fill=\\'%23ccc\\' d=\\'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z\'/%3E%3C/svg%3E'; this.style.padding='2px'; this.style.border='1px solid #ddd';" />`;
+                    return `<img src="${href}" alt="${safeAlt}" title="${safeTitle}" 
+                            onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\'%3E%3Cpath fill=\\'%23ccc\\' d=\\'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z\'/%3E%3C/svg%3E'; this.style.padding='2px'; this.style.border='1px solid #ddd';" class="markdown-image" />`;
                 };
                 
                 // Set custom renderer in options
