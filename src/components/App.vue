@@ -1,5 +1,6 @@
+// Fixed version of App.vue
 <template>
-    <div id="app" class="container" :class="{ 'dark-theme': darkMode }">
+<div id="app" class="container" :class="{ 'dark-theme': darkMode }">
     <header>
         <div class="brand">
             <i class="fas fa-shield-alt"></i>
@@ -27,7 +28,7 @@
             <i class="fas fa-filter filter-icon"></i>
             <select v-model="selectedCategory" @change="searchMalware">
                 <option value="">All Categories</option>
-                <option v-for="category in categories" :value="category.name">
+                <option v-for="category in categories" :key="category.name">
                     {{ category.name }} ({{ category.count }})
                 </option>
             </select>
@@ -45,11 +46,16 @@
             <p>{{ errorMessage }}</p>
         </div>
 
-        <div v-else class="malware-grid">
-            <div v-for="mal in truncatedMalware" :key="mal.id" class="malware-card" @click="openModal(mal)">
+        <div class="malware-grid">
+            <div v-for="mal in truncatedMalware" :key="mal.id || mal.name" class="malware-card" @click="openModal(mal)">
                 <div class="card-header">
                     <h3>{{ mal.name }}</h3>
-                    <span class="category-tag">{{ mal.category }}</span>
+                    <div class="tag-container">
+                        <span class="category-tag">{{ mal.category }}</span>
+                        <span :class="['type-tag', mal.itemType === 'Malware' ? 'malware-type' : 'infra-type']">
+                            {{ mal.itemType }}
+                        </span>
+                    </div>
                 </div>
                 <p class="description">{{ mal.truncatedDescription }}</p>
                 <div class="card-footer">
@@ -62,7 +68,12 @@
     <div v-if="selectedMalware" class="modal" @click="closeModal">
         <div class="modal-content" @click.stop="">
             <div class="modal-header">
-                <h2>{{ selectedMalware.name }}</h2>
+                <div>
+                    <h2>{{ selectedMalware.name }}</h2>
+                    <span :class="['type-badge', selectedMalware.itemType === 'Malware' ? 'malware-badge' : 'infra-badge']">
+                        {{ selectedMalware.itemType }}
+                    </span>
+                </div>
                 <span class="close" @click="closeModal"><i class="fas fa-times"></i></span>
             </div>
 
@@ -90,116 +101,60 @@
             </div>
 
             <div class="tab-navigation">
-                <button :class="['tab-button', { active: activeTab === 'code' }]" @click="activeTab = 'code'">
-                    <i class="fas fa-code"></i> Source Code
-                </button>
-                <button :class="['tab-button', { active: activeTab === 'analysis' }]" @click="activeTab = 'analysis'">
-                    <i class="fas fa-microscope"></i> Analysis
-                </button>
-                <button :class="['tab-button', { active: activeTab === 'reversing' }]" @click="activeTab = 'reversing'">
-                    <i class="fas fa-wrench"></i> Reverse Engineering
+                <button 
+                    v-for="tab in availableTabs" 
+                    :key="tab.id"
+                    :class="['tab-button', { active: activeTab === tab.id }]" 
+                    @click="activeTab = tab.id"
+                    :disabled="!hasTabContent(tab.id)"
+                >
+                    <i :class="tab.icon"></i> {{ tab.label }}
                 </button>
             </div>
 
-            <div v-if="activeTab === 'code'" class="tab-content">
-                <div v-for="file in selectedMalware.files" :key="file.name" class="file-container">
-                    <div class="file-header">
-                        <i class="fas fa-file-code"></i>
-                        <h3>{{ file.name }}</h3>
-                    </div>
-                    <div class="code-block" :data-language="getLanguage(file.name).replace('language-', '')">
-                        <pre><code :class="getLanguage(file.name)" v-html="escapeHtml(file.content)"></code></pre>
-                    </div>
+            <div class="tab-content-container">
+                <!-- Info Tab -->
+                <div v-if="activeTab === 'info' && selectedMalware.infoContent" class="tab-content">
+                    <div class="markdown-content" v-html="renderMarkdown(selectedMalware.infoContent)"></div>
                 </div>
-            </div>
 
-            <div v-if="activeTab === 'analysis'" class="tab-content">
-                <div
-                    v-if="selectedMalware.analysis && selectedMalware.analysis.steps && selectedMalware.analysis.steps.length">
-                    <h3 class="section-title"><i class="fas fa-tasks"></i> Analysis Steps</h3>
-                    <div v-for="(step, index) in selectedMalware.analysis.steps" :key="index" class="analysis-step">
-                        <div class="step-header">
-                            <div class="step-number">{{ index + 1 }}</div>
-                            <h4>{{ step.title }}</h4>
-                        </div>
-                        <div class="step-content">
-                            <p>{{ step.description }}</p>
-
-                            <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
-                                <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
-                                    <h5 v-if="code.title">
-                                        <i class="fas fa-chevron-right"></i> {{ code.title }}
-                                    </h5>
-                                    <div class="code-block" :data-language="code.language">
-                                        <pre><code :class="getLanguage(code.language)" v-html="escapeHtml(code.content)"></code></pre>
-                                    </div>
-                                    <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
-                                </div>
+                <!-- Code Tab -->
+                <div v-if="activeTab === 'code'" class="tab-content">
+                    <div v-if="selectedMalware.codeFiles && selectedMalware.codeFiles.length > 0">
+                        <div v-for="file in selectedMalware.codeFiles" :key="file.name" class="file-container">
+                            <div class="file-header">
+                                <i class="fas fa-file-code"></i>
+                                <h3>{{ file.name }}</h3>
                             </div>
-
-                            <div v-if="step.output" class="step-output">
-                                <h5><i class="fas fa-terminal"></i> Output:</h5>
-                                <pre class="output-block">{{ step.output }}</pre>
-                            </div>
+                            <pre><code :class="getLanguage(file.name)">{{ file.content }}</code></pre>
                         </div>
+                    </div>
+                    <div v-else class="empty-content">
+                        <p>No code files available for this sample.</p>
                     </div>
                 </div>
 
-                <div v-if="selectedMalware.screenshots && selectedMalware.screenshots.length">
-                    <h3 class="section-title"><i class="fas fa-images"></i> Analysis Screenshots</h3>
-                    <div class="screenshot-grid">
-                        <div v-for="screenshot in selectedMalware.screenshots" :key="screenshot.name"
-                            class="screenshot-item">
-                            <img :src="screenshot.url" :alt="screenshot.name" @click="openScreenshot(screenshot)">
-                            <p>{{ screenshot.name }}</p>
-                        </div>
+                <!-- Analysis Tab -->
+                <div v-if="activeTab === 'analysis'" class="tab-content">
+                    <div v-if="selectedMalware.analysisContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.analysisContent)"></div>
+                    <div v-else class="empty-content">
+                        <p>No analysis content available for this sample.</p>
                     </div>
                 </div>
-            </div>
 
-            <div v-if="activeTab === 'reversing'" class="tab-content">
-                <div v-if="selectedMalware.analysis && selectedMalware.analysis.reverseEngineering">
-                    <div v-if="selectedMalware.analysis.reverseEngineering.tools.length">
-                        <h3 class="section-title"><i class="fas fa-tools"></i> Tools Used</h3>
-                        <ul class="tools-list">
-                            <li v-for="tool in selectedMalware.analysis.reverseEngineering.tools" :key="tool.name">
-                                <i class="fas fa-wrench"></i>
-                                <strong>{{ tool.name }}</strong>: {{ tool.purpose }}
-                            </li>
-                        </ul>
+                <!-- Steps Tab -->
+                <div v-if="activeTab === 'steps'" class="tab-content">
+                    <div v-if="selectedMalware.stepsContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.stepsContent)"></div>
+                    <div v-else class="empty-content">
+                        <p>No steps content available for this sample.</p>
                     </div>
+                </div>
 
-                    <div v-if="selectedMalware.analysis.reverseEngineering.steps.length">
-                        <h3 class="section-title"><i class="fas fa-search-plus"></i> Reverse Engineering Analysis</h3>
-                        <div v-for="(step, index) in selectedMalware.analysis.reverseEngineering.steps" :key="index"
-                            class="reversing-step">
-                            <div class="step-header">
-                                <div class="step-number">{{ index + 1 }}</div>
-                                <h4>{{ step.title }}</h4>
-                            </div>
-                            <div class="step-content">
-                                <p>{{ step.description }}</p>
-
-                                <div v-if="step.codeBlocks && step.codeBlocks.length" class="step-code-blocks">
-                                    <div v-for="(code, codeIndex) in step.codeBlocks" :key="codeIndex">
-                                        <h5><i class="fas fa-chevron-right"></i> {{ code.title }}</h5>
-                                        <div class="code-block" :data-language="code.language">
-                                            <pre><code :class="getLanguage(code.language)" v-html="escapeHtml(code.content)"></code></pre>
-                                        </div>
-                                        <p v-if="code.explanation" class="code-explanation">{{ code.explanation }}</p>
-                                    </div>
-                                </div>
-
-                                <div v-if="step.findings" class="step-findings">
-                                    <h5><i class="fas fa-lightbulb"></i> Findings:</h5>
-                                    <ul>
-                                        <li v-for="(finding, findingIndex) in step.findings" :key="findingIndex">
-                                            {{ finding }}
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Config Tab -->
+                <div v-if="activeTab === 'config'" class="tab-content">
+                    <div v-if="selectedMalware.configContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.configContent)"></div>
+                    <div v-else class="empty-content">
+                        <p>No configuration content available for this sample.</p>
                     </div>
                 </div>
             </div>
@@ -209,400 +164,662 @@
 </template>
 
 <script>
-    import { ref, computed, onMounted, nextTick } from 'vue'
-    import axios from 'axios';
+import { ref, computed, nextTick, onMounted } from 'vue';
+import axios from 'axios';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
 
-    export default {
-        setup() {
-            const searchQuery = ref('')
-            const allMalware = ref([])
-            const malware = ref([])
-            const selectedCategory = ref('')
-            const errorMessage = ref('')
-            const selectedMalware = ref(null)
-            const isLoading = ref(true)
-            const activeTab = ref('code')
+export default {
+    setup() {
+        const searchQuery = ref('');
+        const allMalware = ref([]);
+        const malware = ref([]);
+        const selectedCategory = ref('');
+        const errorMessage = ref('');
+        const selectedMalware = ref(null);
+        const isLoading = ref(true);
+        const activeTab = ref('info');
+        
+        // Configure marked options for security
+        marked.setOptions({
+            headerIds: false,
+            mangle: false,
+            gfm: true,
+            breaks: true,
+            sanitize: false,
+            smartLists: true,
+            smartypants: true,
+            xhtml: false
+        });
 
-            const categories = computed(() => {
-                const categoryCounts = allMalware.value.reduce((acc, malware) => {
-                    acc[malware.category] = (acc[malware.category] || 0) + 1;
-                    return acc;
-                }, {});
+        const availableTabs = ref([
+            { id: 'info', label: 'Information', icon: 'fas fa-info-circle' },
+            { id: 'code', label: 'Source Code', icon: 'fas fa-code' },
+            { id: 'analysis', label: 'Analysis', icon: 'fas fa-microscope' },
+            { id: 'steps', label: 'Steps', icon: 'fas fa-list-ol' },
+            { id: 'config', label: 'Configuration', icon: 'fas fa-cog' }
+        ]);
 
-                return Object.keys(categoryCounts).map(category => ({
-                    name: category,
-                    count: categoryCounts[category]
-                }));
+        const categories = computed(() => {
+            if (!allMalware.value.length) return [];
+            
+            const categoryCounts = {};
+            allMalware.value.forEach(mal => {
+                if (!categoryCounts[mal.category]) {
+                    categoryCounts[mal.category] = 0;
+                }
+                categoryCounts[mal.category]++;
             });
+            
+            return Object.keys(categoryCounts).map(name => ({
+                name,
+                count: categoryCounts[name]
+            })).sort((a, b) => a.name.localeCompare(b.name));
+        });
 
-            const loadMalware = async () => {
+        const hasTabContent = (tabId) => {
+            if (!selectedMalware.value) return false;
+            switch(tabId) {
+                case 'info': return !!selectedMalware.value.infoContent;
+                case 'code': return selectedMalware.value.codeFiles?.length > 0;
+                case 'analysis': return !!selectedMalware.value.analysisContent;
+                case 'steps': return !!selectedMalware.value.stepsContent;
+                case 'config': return !!selectedMalware.value.configContent;
+                default: return false;
+            }
+        };
+
+        const renderMarkdown = (markdown) => {
+            if (!markdown) return '';
+            try {
+                return marked(markdown);
+            } catch (error) {
+                console.error('Error rendering markdown:', error);
+                return `<p>Error rendering content: ${error.message}</p>`;
+            }
+        };
+
+        // Function to perform HTTP requests with retry capability
+        const fetchWithRetry = async (url, options = {}, maxRetries = 3) => {
+            let retries = 0;
+            
+            while (retries < maxRetries) {
                 try {
-                    const cachedData = localStorage.getItem('cachedMalwareData');
-                    const cachedTimestamp = localStorage.getItem('cachedMalwareTimestamp');
-                    const CACHE_VALIDITY = 24 * 60 * 60 * 1000;
+                    return await axios.get(url, options);
+                } catch (error) {
+                    const isRateLimit = error.response && error.response.status === 403 &&
+                        error.response.headers['x-ratelimit-remaining'] === '0';
+                    
+                    if (isRateLimit && retries < maxRetries - 1) {
+                        const delay = Math.pow(2, retries) * 1000; // Exponential backoff
+                        console.log(`Rate limited. Retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        retries++;
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+        };
 
-                    if (cachedData && cachedTimestamp) {
-                        const currentTime = new Date().getTime();
-                        const cacheAge = currentTime - parseInt(cachedTimestamp);
+        // Extract metadata from markdown content
+        const extractMetadata = (content) => {
+            if (!content) return { description: '', category: 'Unknown', references: [] };
+            
+            try {
+                const description = content.split('\n').find(line => 
+                    line.trim().startsWith('## Description') || 
+                    line.trim().startsWith('# Description') ||
+                    line.trim().startsWith('## Overview')
+                );
+                
+                let descriptionText = 'No description available';
+                if (description) {
+                    descriptionText = content.split(description)[1].split('##')[0].trim();
+                } else {
+                    // Fall back to first paragraph if no description heading
+                    const firstParagraph = content.split('\n\n')[1];
+                    if (firstParagraph && !firstParagraph.startsWith('#')) {
+                        descriptionText = firstParagraph.trim();
+                    }
+                }
+                
+                // Try to find category
+                const categoryLine = content.split('\n').find(line => 
+                    line.toLowerCase().includes('category:') || 
+                    line.toLowerCase().includes('type:')
+                );
+                let category = 'Unspecified';
+                if (categoryLine) {
+                    category = categoryLine.split(':')[1].trim();
+                }
+                
+                // Try to find references
+                const references = [];
+                if (content.toLowerCase().includes('## references') || content.toLowerCase().includes('# references')) {
+                    const referencesSection = content.split(/## references|# references/i)[1].split('##')[0];
+                    const links = referencesSection.match(/\[.*?\]\(.*?\)|\bhttps?:\/\/\S+\b/g);
+                    if (links) {
+                        links.forEach(link => {
+                            let url = link;
+                            if (link.includes('](')) {
+                                url = link.split('](')[1].replace(')', '');
+                            }
+                            if (url.startsWith('http')) {
+                                references.push(url);
+                            }
+                        });
+                    }
+                }
+                
+                return {
+                    description: descriptionText,
+                    category,
+                    references
+                };
+            } catch (error) {
+                console.error('Error extracting metadata:', error);
+                return { 
+                    description: 'Error extracting description', 
+                    category: 'Error', 
+                    references: [] 
+                };
+            }
+        };
 
-                        if (cacheAge < CACHE_VALIDITY) {
+        // Helper function to determine if item is likely a malware sample or infrastructure
+        const determineItemType = (item) => {
+            // Check for specific directories that indicate the type
+            const hasAnalysis = item.analysisContent !== null;
+            const hasConfig = item.configContent !== null;
+            const category = item.category.toLowerCase();
+            
+            // Categories that strongly indicate malware
+            const malwareKeywords = ['malware', 'virus', 'trojan', 'ransomware', 'worm', 'spyware', 'rootkit', 'backdoor', 'exploit'];
+            
+            // Categories that indicate infrastructure
+            const infraKeywords = ['infrastructure', 'server', 'config', 'setup', 'guide'];
+            
+            if (malwareKeywords.some(keyword => category.includes(keyword)) || hasAnalysis) {
+                return 'Malware';
+            } else if (infraKeywords.some(keyword => category.includes(keyword)) || hasConfig) {
+                return 'Infrastructure';
+            }
+            
+            // Default fallback based on directory presence
+            return hasAnalysis ? 'Malware' : 'Infrastructure';
+        };
+
+        const loadMalware = async () => {
+            try {
+                const cachedData = localStorage.getItem('cachedMalwareData');
+                const cachedTimestamp = localStorage.getItem('cachedMalwareTimestamp');
+                const CACHE_VALIDITY = 24 * 60 * 60 * 1000;
+
+                if (cachedData && cachedTimestamp) {
+                    const currentTime = new Date().getTime();
+                    const cacheAge = currentTime - parseInt(cachedTimestamp);
+
+                    if (cacheAge < CACHE_VALIDITY) {
+                        allMalware.value = JSON.parse(cachedData);
+                        malware.value = allMalware.value;
+                        isLoading.value = false;
+                        return;
+                    }
+                }
+
+                const github_token = process.env.GITHUB_TOKEN || '';
+                
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                
+                if (github_token) {
+                    headers['Authorization'] = `token ${github_token}`;
+                }
+
+                // First check the root repository structure
+                const repoUrl = 'https://api.github.com/repos/0x4F776C/ThreatPlayground/contents';
+                const repoContentsResponse = await fetchWithRetry(repoUrl, { headers });
+                
+                // Check if we have a structured repo with Malware/Infrastructure directories
+                const rootDirs = repoContentsResponse.data.filter(item => item.type === 'dir');
+                const malwareDir = rootDirs.find(dir => dir.name === 'Malware');
+                const infraDir = rootDirs.find(dir => dir.name === 'Infrastructure');
+                
+                let allEntries = [];
+                
+                // Process structured repository format
+                if (malwareDir || infraDir) {
+                    // Process Malware directory if it exists
+                    if (malwareDir) {
+                        const malwareContentsResponse = await fetchWithRetry(malwareDir.url, { headers });
+                        const malwareSamples = await processCategoryDirectory(malwareContentsResponse.data, 'Malware', headers);
+                        allEntries = [...allEntries, ...malwareSamples];
+                    }
+                    
+                    // Process Infrastructure directory if it exists
+                    if (infraDir) {
+                        const infraContentsResponse = await fetchWithRetry(infraDir.url, { headers });
+                        const infraSamples = await processCategoryDirectory(infraContentsResponse.data, 'Infrastructure', headers);
+                        allEntries = [...allEntries, ...infraSamples];
+                    }
+                } else {
+                    // Legacy/flat repository format - all directories at root
+                    const entries = await processCategoryDirectory(rootDirs, null, headers);
+                    allEntries = entries;
+                }
+                
+                // Filter out nulls and sort by name
+                allMalware.value = allEntries
+                    .filter(item => item !== null)
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                    
+                malware.value = allMalware.value;
+                
+                // Cache the data
+                localStorage.setItem('cachedMalwareData', JSON.stringify(allMalware.value));
+                localStorage.setItem('cachedMalwareTimestamp', new Date().getTime().toString());
+                
+            } catch (error) {
+                console.error('Error fetching malware:', error);
+                
+                if (error.response && error.response.status === 403) {
+                    const rateLimitRemaining = error.response.headers['x-ratelimit-remaining'];
+                    const rateLimitReset = error.response.headers['x-ratelimit-reset'];
+                    
+                    if (rateLimitRemaining === '0') {
+                        const resetDate = new Date(rateLimitReset * 1000);
+                        const resetTimeString = resetDate.toLocaleTimeString();
+                        
+                        errorMessage.value = `GitHub API rate limit exceeded. Limit will reset at ${resetTimeString}. Using cached data if available.`;
+                        
+                        const cachedData = localStorage.getItem('cachedMalwareData');
+                        if (cachedData) {
                             allMalware.value = JSON.parse(cachedData);
                             malware.value = allMalware.value;
-                            isLoading.value = false;
-                            return;
-                        }
-                    }
-
-                    const github_token = process.env.GITHUB_TOKEN || '';
-
-                    const headers = { 'Accept': 'application/vnd.github.v3+json' };
-
-                    if (github_token) {
-                        headers['Authorization'] = `token ${github_token}`;
-                    }
-
-                    const fetchWithRetry = async (url, options = {}, maxRetries = 3) => {
-                        let retries = 0;
-
-                        while (retries < maxRetries) {
-                            try {
-                                return await axios.get(url, options);
-                            } catch (error) {
-                                const isRateLimit = error.response && error.response.status === 403 &&
-                                    error.response.headers['x-ratelimit-remaining'] === '0';
-
-                                if (isRateLimit && retries < maxRetries - 1) {
-                                    const delay = Math.pow(2, retries) * 1000; // Exponential backoff
-                                    console.log(`Rate limited. Retrying in ${delay}ms...`);
-                                    await new Promise(resolve => setTimeout(resolve, delay));
-                                    retries++;
-                                } else {
-                                    throw error;
-                                }
-                            }
-                        }
-                    };
-
-                    const repoContentsResponse = await fetchWithRetry('https://api.github.com/repos/0x4F776C/Malware/contents', { headers });
-
-                    const directories = repoContentsResponse.data.filter(item => item.type === 'dir');
-                    const malwareData = await Promise.all(directories.map(async (dir) => {
-                        try {
-                            const dirContentsResponse = await fetchWithRetry(dir.url, { headers });
-                            const infoFile = dirContentsResponse.data.find(file => file.name === 'info.json');
-                            if (!infoFile) {
-                                console.warn(`No info.json found in ${dir.name}`);
-                                return null;
-                            }
-
-                            const infoResponse = await fetchWithRetry(infoFile.download_url, { headers });
-                            const info = infoResponse.data;
-
-                            const codeDir = dirContentsResponse.data.find(item => item.name === 'code' && item.type === 'dir');
-                            let files = [];
-
-                            if (codeDir) {
-                                const codeContentsResponse = await fetchWithRetry(codeDir.url, { headers });
-                                const codeFiles = codeContentsResponse.data.filter(file =>
-                                    /\.(go|py|js|jsx|ts|tsx|c|cpp|java|rb|php|cs|rs|swift|sh|bash|zsh|bat|cmd|ps1|html|htm|css|scss|sass|less|json|xml|yaml|yml|sql|psql|hs|ml|clj|cljc|cljs|lua|r|jl|kt|scala|dart|toml|ini|md|csv|tsv|makefile|dockerfile|gradle|groovy|asm|s|coffee)$/i.test(file.name)
-                                );
-
-                                files = await Promise.all(codeFiles.map(async (file) => {
-                                    const content = await fetchWithRetry(file.download_url, { headers });
-                                    return { name: file.name, content: content.data };
-                                }));
-                            }
-
-
-                            const analysisDir = dirContentsResponse.data.find(item => item.name === 'analysis' && item.type === 'dir');
-                            let analysis = null;
-                            let analysisScreenshots = [];
-
-                            if (analysisDir) {
-                                const analysisContentsResponse = await fetchWithRetry(analysisDir.url, { headers });
-
-                                const analysisFile = analysisContentsResponse.data.find(file => file.name === 'analysis.json');
-                                if (analysisFile) {
-                                    const analysisResponse = await fetchWithRetry(analysisFile.download_url, { headers });
-                                    analysis = analysisResponse.data;
-                                }
-
-                                const screenshots = analysisContentsResponse.data.filter(file =>
-                                    /\.(png|jpg|jpeg|gif)$/i.test(file.name)
-                                );
-
-                                analysisScreenshots = screenshots.map(screenshot => ({
-                                    name: screenshot.name,
-                                    url: screenshot.download_url
-                                }));
-                            }
-
-                            return {
-                                name: info.name || dir.name,
-                                category: info.category,
-                                description: info.description,
-                                references: info.references,
-                                files: files,
-                                analysis: analysis || {
-                                    steps: [],
-                                    reverseEngineering: {
-                                        tools: [],
-                                        steps: []
-                                    }
-                                },
-                                screenshots: analysisScreenshots
-                            };
-                        } catch (error) {
-                            console.error(`Error processing ${dir.name}:`, error);
-                            return null;
-                        }
-                    }));
-
-                    allMalware.value = malwareData.filter(item => item !== null);
-                    malware.value = allMalware.value;
-
-                    localStorage.setItem('cachedMalwareData', JSON.stringify(allMalware.value));
-                    localStorage.setItem('cachedMalwareTimestamp', new Date().getTime().toString());
-
-                } catch (error) {
-                    console.error('Error fetching malware:', error);
-
-                    if (error.response && error.response.status === 403) {
-                        const rateLimitRemaining = error.response.headers['x-ratelimit-remaining'];
-                        const rateLimitReset = error.response.headers['x-ratelimit-reset'];
-
-                        if (rateLimitRemaining === '0') {
-                            const resetDate = new Date(rateLimitReset * 1000);
-                            const resetTimeString = resetDate.toLocaleTimeString();
-
-                            errorMessage.value = `GitHub API rate limit exceeded. Limit will reset at ${resetTimeString}. Using cached data if available.`;
-
-                            const cachedData = localStorage.getItem('cachedMalwareData');
-                            if (cachedData) {
-                                allMalware.value = JSON.parse(cachedData);
-                                malware.value = allMalware.value;
-                                errorMessage.value += ' Using cached data for now.';
-                            }
-                        } else {
-                            errorMessage.value = 'Failed to load malware data. Please try again later.';
+                            errorMessage.value += ' Using cached data for now.';
                         }
                     } else {
-                        errorMessage.value = 'Failed to load malware data. Please try again later.';
+                        errorMessage.value = 'Failed to load data. Please try again later.';
                     }
-                } finally {
-                    isLoading.value = false;
-                }
-            };
-
-            const visibleMalware = computed(() => {
-                if (searchQuery.value || selectedCategory.value) {
-                    return malware.value;
                 } else {
-                    return malware.value.slice(0, 5);
+                    errorMessage.value = 'Failed to load data. Please try again later.';
                 }
-            });
-
-            const searchMalware = () => {
-                malware.value = allMalware.value.filter(malware =>
-                    (malware.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                        malware.description.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
-                    (selectedCategory.value === '' || malware.category === selectedCategory.value)
-                );
-            };
-
-            const truncatedMalware = computed(() => {
-                return malware.value.map(mal => ({
-                    ...mal,
-                    truncatedDescription: mal.description.length > 70
-                        ? mal.description.substring(0, 70) + '...'
-                        : mal.description
-                }));
-            });
-
-            const escapeHtml = (unsafe) => {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            };
-
-            const openModal = (malware) => {
-                selectedMalware.value = malware
-                activeTab.value = 'code'
-
-                document.body.classList.add('modal-open')
-
-                nextTick(() => {
-                    highlightAll();
-                });
-            };
-
-            const closeModal = () => {
-                selectedMalware.value = null
-                activeTab.value = 'code'
-
-                document.body.classList.remove('modal-open')
-            };
-
-            const getLanguage = (fileName) => {
-                const extension = fileName.split('.').pop().toLowerCase();
-                const languageMap = {
-                    // General-purpose programming languages
-                    'c': 'language-c',
-                    'cpp': 'language-cpp',
-                    'cs': 'language-csharp',
-                    'go': 'language-go',
-                    'java': 'language-java',
-                    'js': 'language-javascript',
-                    'jsx': 'language-javascript',
-                    'ts': 'language-typescript',
-                    'tsx': 'language-typescript',
-                    'py': 'language-python',
-                    'rb': 'language-ruby',
-                    'php': 'language-php',
-                    'rs': 'language-rust',
-                    'swift': 'language-swift',
-                    'kt': 'language-kotlin',
-                    'scala': 'language-scala',
-                    'dart': 'language-dart',
-                    'lua': 'language-lua',
-                    'perl': 'language-perl',
-                    'pl': 'language-perl',
-                    'r': 'language-r',
-                    'jl': 'language-julia',
-
-                    // Web development
-                    'html': 'language-html',
-                    'htm': 'language-html',
-                    'css': 'language-css',
-                    'scss': 'language-scss',
-                    'sass': 'language-sass',
-                    'less': 'language-less',
-                    'json': 'language-json',
-                    'xml': 'language-xml',
-                    'yaml': 'language-yaml',
-                    'yml': 'language-yaml',
-
-                    // Shell scripting and system-level scripting
-                    'sh': 'language-shell',
-                    'bash': 'language-shell',
-                    'zsh': 'language-shell',
-                    'bat': 'language-batch',
-                    'cmd': 'language-batch',
-                    'ps1': 'language-powershell',
-
-                    // Database and query languages
-                    'sql': 'language-sql',
-                    'psql': 'language-postgresql',
-
-                    // Functional programming
-                    'hs': 'language-haskell',
-                    'ml': 'language-ocaml',
-                    'clj': 'language-clojure',
-                    'cljc': 'language-clojure',
-                    'cljs': 'language-clojurescript',
-
-                    // Data science and configuration files
-                    'toml': 'language-toml',
-                    'ini': 'language-ini',
-                    'md': 'language-markdown',
-                    'csv': 'language-csv',
-                    'tsv': 'language-tsv',
-
-                    // Miscellaneous
-                    'makefile': 'language-makefile',
-                    'dockerfile': 'language-dockerfile',
-                    'gradle': 'language-gradle',
-                    'groovy': 'language-groovy',
-
-                    // Assembly languages
-                    'asm': 'language-assembly',
-                    's': 'language-assembly',
-
-                    // Misc
-                    'coffee': 'language-coffeescript',
-                };
-
-                return languageMap[extension] || 'language-plaintext';
-            };
-
-            const highlightAll = () => {
-                nextTick(() => {
-                    document.querySelectorAll('pre code').forEach((block) => {
-                        hljs.highlightElement(block);
-                    });
-                });
-            };
-
-            const darkMode = ref(localStorage.getItem('darkMode') === 'true' || window.matchMedia('(prefers-color-scheme: dark)').matches)
-
-            const applyTheme = (isDark) => {
-                if (isDark) {
-                    document.documentElement.classList.add('dark-theme')
-                } else {
-                    document.documentElement.classList.remove('dark-theme')
-                }
-                localStorage.setItem('darkMode', isDark)
+            } finally {
+                isLoading.value = false;
             }
-
-            const toggleTheme = () => {
-                darkMode.value = !darkMode.value
-                applyTheme(darkMode.value)
-            }
-
-            const setupKeyboardListeners = () => {
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && selectedMalware.value) {
-                        closeModal();
+        };
+        
+        // Process directories within a category folder or root
+        const processCategoryDirectory = async (directories, categoryPrefix, headers) => {
+            return await Promise.all(directories.map(async (dir) => {
+                try {
+                    const dirContentsResponse = await fetchWithRetry(dir.url, { headers });
+                    const dirContents = dirContentsResponse.data;
+                    
+                    // Get info.md or README.md content
+                    const infoFile = dirContents.find(file => 
+                        file.name.toLowerCase() === 'info.md' || 
+                        file.name.toLowerCase() === 'readme.md'
+                    );
+                    
+                    if (!infoFile) {
+                        console.warn(`No info/README file found in ${dir.name}`);
+                        return null;
                     }
-                });
-            };
 
-            onMounted(() => {
-                loadMalware();
+                    const infoResponse = await fetchWithRetry(infoFile.download_url, { headers });
+                    const infoContent = infoResponse.data;
+                    
+                    // Extract metadata from the info content
+                    const metadata = extractMetadata(infoContent);
+                    
+                    // Get code files
+                    const codeDir = dirContents.find(item => item.name.toLowerCase() === 'code' && item.type === 'dir');
+                    let codeFiles = [];
+                    
+                    if (codeDir) {
+                        const codeContentsResponse = await fetchWithRetry(codeDir.url, { headers });
+                        codeFiles = await Promise.all(
+                            codeContentsResponse.data
+                            .filter(file => file.type === 'file')
+                            .map(async (file) => {
+                                const fileResponse = await fetchWithRetry(file.download_url, { headers });
+                                return { 
+                                    name: file.name, 
+                                    content: fileResponse.data 
+                                };
+                            })
+                        );
+                    }
+                    
+                    // Get analysis content
+                    const analysisDir = dirContents.find(item => 
+                        item.name.toLowerCase() === 'analysis' && 
+                        item.type === 'dir'
+                    );
+                    
+                    let analysisContent = null;
+                    if (analysisDir) {
+                        try {
+                            const analysisContentsResponse = await fetchWithRetry(analysisDir.url, { headers });
+                            const analysisFiles = analysisContentsResponse.data.filter(file => 
+                                file.name.toLowerCase().endsWith('.md')
+                            );
+                            
+                            // Combine all analysis markdown files
+                            if (analysisFiles.length) {
+                                let allAnalysis = '';
+                                for (const file of analysisFiles) {
+                                    const fileResponse = await fetchWithRetry(file.download_url, { headers });
+                                    allAnalysis += `# ${file.name.replace('.md', '')}\n\n${fileResponse.data}\n\n`;
+                                }
+                                analysisContent = allAnalysis;
+                            }
+                        } catch (error) {
+                            console.warn(`Error loading analysis for ${dir.name}:`, error);
+                        }
+                    }
+                    
+                    // Get steps content
+                    const stepsDir = dirContents.find(item => 
+                        item.name.toLowerCase() === 'steps' && 
+                        item.type === 'dir'
+                    );
+                    
+                    let stepsContent = null;
+                    if (stepsDir) {
+                        try {
+                            const stepsContentsResponse = await fetchWithRetry(stepsDir.url, { headers });
+                            const stepsFile = stepsContentsResponse.data.find(file => 
+                                file.name.toLowerCase().includes('steps') && 
+                                file.name.endsWith('.md')
+                            );
+                            
+                            if (stepsFile) {
+                                const stepsResponse = await fetchWithRetry(stepsFile.download_url, { headers });
+                                stepsContent = stepsResponse.data;
+                            }
+                        } catch (error) {
+                            console.warn(`Error loading steps for ${dir.name}:`, error);
+                        }
+                    }
+                    
+                    // Get config content - check both 'config' and 'configuration-files' directories
+                    const configDirs = dirContents.filter(item => 
+                        (item.name.toLowerCase().includes('config') || 
+                         item.name.toLowerCase() === 'configuration-files') && 
+                        item.type === 'dir'
+                    );
+                    
+                    let configContent = null;
+                    if (configDirs.length > 0) {
+                        try {
+                            // Try each possible config directory
+                            for (const configDir of configDirs) {
+                                const configContentsResponse = await fetchWithRetry(configDir.url, { headers });
+                                const configFiles = configContentsResponse.data.filter(file => file.name.endsWith('.md'));
+                                
+                                if (configFiles.length > 0) {
+                                    let combinedConfig = '';
+                                    // Combine all config markdown files
+                                    for (const file of configFiles) {
+                                        const configResponse = await fetchWithRetry(file.download_url, { headers });
+                                        combinedConfig += `# ${file.name.replace('.md', '')}\n\n${configResponse.data}\n\n`;
+                                    }
+                                    configContent = combinedConfig;
+                                    break; // Found config content, no need to check other dirs
+                                }
+                            }
+                        } catch (error) {
+                            console.warn(`Error loading config for ${dir.name}:`, error);
+                        }
+                    }
+
+                    const entry = {
+                        name: dir.name,
+                        description: metadata.description,
+                        category: metadata.category,
+                        references: metadata.references,
+                        infoContent,
+                        codeFiles,
+                        analysisContent,
+                        stepsContent,
+                        configContent
+                    };
+                    
+                    // If categoryPrefix provided, determine if this is Malware or Infrastructure
+                    if (!categoryPrefix) {
+                        entry.itemType = determineItemType(entry);
+                    } else {
+                        entry.itemType = categoryPrefix;
+                    }
+
+                    return entry;
+                } catch (error) {
+                    console.error(`Error processing ${dir.name}:`, error);
+                    return null;
+                }
+            }));
+        };
+
+        const searchMalware = () => {
+            const query = searchQuery.value.toLowerCase();
+            malware.value = allMalware.value.filter(item =>
+                // Search in name and description
+                (item.name.toLowerCase().includes(query) ||
+                 item.description.toLowerCase().includes(query)) &&
+                // Filter by selected category if needed
+                (selectedCategory.value === '' || item.category === selectedCategory.value)
+            );
+        };
+
+        const truncatedMalware = computed(() => {
+            return malware.value.map(mal => ({
+                ...mal,
+                truncatedDescription: mal.description && mal.description.length > 70
+                    ? mal.description.substring(0, 70) + '...'
+                    : mal.description || 'No description available'
+            }));
+        });
+
+        const escapeHtml = (unsafe) => {
+            if (!unsafe) return '';
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
+        const openModal = (malware) => {
+            selectedMalware.value = malware;
+            
+            // Select the first available tab with content
+            for (const tab of availableTabs.value) {
+                if (hasTabContent(tab.id)) {
+                    activeTab.value = tab.id;
+                    break;
+                }
+            }
+            
+            document.body.classList.add('modal-open');
+            
+            nextTick(() => {
                 highlightAll();
-                setupKeyboardListeners();
-                applyTheme(darkMode.value)
+            });
+        };
 
+        const closeModal = () => {
+            selectedMalware.value = null;
+            document.body.classList.remove('modal-open');
+        };
+
+        const getLanguage = (fileName) => {
+            if (!fileName) return 'language-plaintext';
+            const extension = fileName.split('.').pop().toLowerCase();
+            const languageMap = {
+                // General-purpose programming languages
+                'c': 'language-c',
+                'cpp': 'language-cpp',
+                'cs': 'language-csharp',
+                'go': 'language-go',
+                'java': 'language-java',
+                'js': 'language-javascript',
+                'jsx': 'language-javascript',
+                'ts': 'language-typescript',
+                'tsx': 'language-typescript',
+                'py': 'language-python',
+                'rb': 'language-ruby',
+                'php': 'language-php',
+                'rs': 'language-rust',
+                'swift': 'language-swift',
+                'kt': 'language-kotlin',
+                'scala': 'language-scala',
+                'dart': 'language-dart',
+                'lua': 'language-lua',
+                'perl': 'language-perl',
+                'pl': 'language-perl',
+                'r': 'language-r',
+                'jl': 'language-julia',
+
+                // Web development
+                'html': 'language-html',
+                'htm': 'language-html',
+                'css': 'language-css',
+                'scss': 'language-scss',
+                'sass': 'language-sass',
+                'less': 'language-less',
+                'json': 'language-json',
+                'xml': 'language-xml',
+                'yaml': 'language-yaml',
+                'yml': 'language-yaml',
+
+                // Shell scripting and system-level scripting
+                'sh': 'language-shell',
+                'bash': 'language-shell',
+                'zsh': 'language-shell',
+                'bat': 'language-batch',
+                'cmd': 'language-batch',
+                'ps1': 'language-powershell',
+
+                // Database and query languages
+                'sql': 'language-sql',
+                'psql': 'language-postgresql',
+
+                // Functional programming
+                'hs': 'language-haskell',
+                'ml': 'language-ocaml',
+                'clj': 'language-clojure',
+                'cljc': 'language-clojure',
+                'cljs': 'language-clojurescript',
+
+                // Data science and configuration files
+                'toml': 'language-toml',
+                'ini': 'language-ini',
+                'md': 'language-markdown',
+                'csv': 'language-csv',
+                'tsv': 'language-tsv',
+
+                // Miscellaneous
+                'makefile': 'language-makefile',
+                'dockerfile': 'language-dockerfile',
+                'gradle': 'language-gradle',
+                'groovy': 'language-groovy',
+
+                // Assembly languages
+                'asm': 'language-assembly',
+                's': 'language-assembly',
+
+                // Misc
+                'coffee': 'language-coffeescript',
+            };
+
+            return languageMap[extension] || 'language-plaintext';
+        };
+
+        const highlightAll = () => {
+            nextTick(() => {
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+            });
+        };
+
+        const darkMode = ref(
+            localStorage.getItem('darkMode') === 'true' || 
+            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        );
+
+        const applyTheme = (isDark) => {
+            if (isDark) {
+                document.documentElement.classList.add('dark-theme');
+            } else {
+                document.documentElement.classList.remove('dark-theme');
+            }
+            localStorage.setItem('darkMode', isDark);
+        };
+
+        const toggleTheme = () => {
+            darkMode.value = !darkMode.value;
+            applyTheme(darkMode.value);
+        };
+
+        const setupKeyboardListeners = () => {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && selectedMalware.value) {
+                    closeModal();
+                }
+            });
+        };
+
+        onMounted(() => {
+            loadMalware();
+            highlightAll();
+            setupKeyboardListeners();
+            applyTheme(darkMode.value);
+            
+            if (window.matchMedia) {
                 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
                     if (localStorage.getItem('darkMode') === null) {
-                        darkMode.value = e.matches
-                        applyTheme(darkMode.value)
+                        darkMode.value = e.matches;
+                        applyTheme(darkMode.value);
                     }
-                })
-            });
-
-            return {
-                escapeHtml,
-                searchQuery,
-                categories,
-                selectedCategory,
-                malware,
-                visibleMalware,
-                searchMalware,
-                selectedMalware,
-                truncatedMalware,
-                openModal,
-                closeModal,
-                activeTab,
-                getLanguage,
-                highlightAll,
-                isLoading,
-                errorMessage,
-                darkMode,
-                toggleTheme
-            };
-        },
-        methods: {
-            clearSearch() {
-                this.searchQuery = ''
-                this.searchMalware()
+                });
             }
-        },
-        updated() {
-            this.highlightAll()
-        }
+        });
+
+        return {
+            availableTabs,
+            hasTabContent,
+            renderMarkdown,
+            escapeHtml,
+            searchQuery,
+            categories,
+            selectedCategory,
+            malware,
+            searchMalware,
+            selectedMalware,
+            truncatedMalware,
+            openModal,
+            closeModal,
+            activeTab,
+            getLanguage,
+            highlightAll,
+            isLoading,
+            errorMessage,
+            darkMode,
+            toggleTheme,
+            clearSearch: () => {
+                searchQuery.value = '';
+                searchMalware();
+            }
+        };
+    },
+    updated() {
+        this.$nextTick(() => {
+            this.highlightAll();
+        });
     }
+}
 </script>
