@@ -104,9 +104,12 @@
                 <button 
                     v-for="tab in availableTabs" 
                     :key="tab.id"
-                    :class="['tab-button', { active: activeTab === tab.id }]" 
-                    @click="activeTab = tab.id"
-                    :disabled="!hasTabContent(tab.id)"
+                    :class="['tab-button', { 
+                        active: activeTab === tab.id,
+                        disabled: isTabDisabled(tab.id)
+                    }]" 
+                    @click="!isTabDisabled(tab.id) && (activeTab = tab.id)"
+                    :title="isTabDisabled(tab.id) ? getTabUnavailabilityReason(tab.id) : ''"
                 >
                     <i :class="tab.icon"></i> {{ tab.label }}
                 </button>
@@ -129,7 +132,12 @@
                             <pre><code :class="getLanguage(file.name)">{{ file.content }}</code></pre>
                         </div>
                     </div>
+                    <div v-else-if="isTabDisabled('code')" class="content-unavailable">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <span>Source code is not available for Infrastructure items</span>
+                    </div>
                     <div v-else class="empty-content">
+                        <i class="fas fa-code"></i>
                         <p>No code files available for this sample.</p>
                     </div>
                 </div>
@@ -137,7 +145,12 @@
                 <!-- Analysis Tab -->
                 <div v-if="activeTab === 'analysis'" class="tab-content">
                     <div v-if="selectedMalware.analysisContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.analysisContent)"></div>
+                    <div v-else-if="isTabDisabled('analysis')" class="content-unavailable">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <span>Analysis is not available for Infrastructure items</span>
+                    </div>
                     <div v-else class="empty-content">
+                        <i class="fas fa-microscope"></i>
                         <p>No analysis content available for this sample.</p>
                     </div>
                 </div>
@@ -145,7 +158,12 @@
                 <!-- Steps Tab -->
                 <div v-if="activeTab === 'steps'" class="tab-content">
                     <div v-if="selectedMalware.stepsContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.stepsContent)"></div>
+                    <div v-else-if="isTabDisabled('steps')" class="content-unavailable">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <span>Steps are not available for Malware samples</span>
+                    </div>
                     <div v-else class="empty-content">
+                        <i class="fas fa-list-ol"></i>
                         <p>No steps content available for this sample.</p>
                     </div>
                 </div>
@@ -153,7 +171,12 @@
                 <!-- Config Tab -->
                 <div v-if="activeTab === 'config'" class="tab-content">
                     <div v-if="selectedMalware.configContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.configContent)"></div>
+                    <div v-else-if="isTabDisabled('config')" class="content-unavailable">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <span>Configuration is not available for Malware samples</span>
+                    </div>
                     <div v-else class="empty-content">
+                        <i class="fas fa-cog"></i>
                         <p>No configuration content available for this sample.</p>
                     </div>
                 </div>
@@ -219,6 +242,24 @@ export default {
 
         const hasTabContent = (tabId) => {
             if (!selectedMalware.value) return false;
+            
+            const itemType = selectedMalware.value.itemType;
+            
+            // For Malware items, disable Steps and Config tabs
+            if (itemType === 'Malware') {
+                if (tabId === 'steps' || tabId === 'config') {
+                    return false;
+                }
+            }
+            
+            // For Infrastructure items, disable Code and Analysis tabs
+            if (itemType === 'Infrastructure') {
+                if (tabId === 'code' || tabId === 'analysis') {
+                    return false;
+                }
+            }
+            
+            // Check if content exists for tabs
             switch(tabId) {
                 case 'info': return !!selectedMalware.value.infoContent;
                 case 'code': return selectedMalware.value.codeFiles?.length > 0;
@@ -227,6 +268,38 @@ export default {
                 case 'config': return !!selectedMalware.value.configContent;
                 default: return false;
             }
+        };
+
+        const isTabDisabled = (tabId) => {
+            if (!selectedMalware.value) return true;
+            
+            const itemType = selectedMalware.value.itemType;
+            
+            if (itemType === 'Malware') {
+                return (tabId === 'steps' || tabId === 'config');
+            }
+            
+            if (itemType === 'Infrastructure') {
+                return (tabId === 'code' || tabId === 'analysis');
+            }
+            
+            return false;
+        };
+
+        const getTabUnavailabilityReason = (tabId) => {
+            if (!selectedMalware.value) return '';
+            
+            const itemType = selectedMalware.value.itemType;
+            
+            if (itemType === 'Malware' && (tabId === 'steps' || tabId === 'config')) {
+                return `${tabId.charAt(0).toUpperCase() + tabId.slice(1)} are not applicable for Malware samples`;
+            }
+            
+            if (itemType === 'Infrastructure' && (tabId === 'code' || tabId === 'analysis')) {
+                return `${tabId.charAt(0).toUpperCase() + tabId.slice(1)} is not applicable for Infrastructure items`;
+            }
+            
+            return '';
         };
 
         const renderMarkdown = (markdown) => {
@@ -635,12 +708,19 @@ export default {
         const openModal = (malware) => {
             selectedMalware.value = malware;
             
-            // Select the first available tab with content
+            // Select the first available and enabled tab with content
+            let tabSelected = false;
             for (const tab of availableTabs.value) {
-                if (hasTabContent(tab.id)) {
+                if (hasTabContent(tab.id) && !isTabDisabled(tab.id)) {
                     activeTab.value = tab.id;
+                    tabSelected = true;
                     break;
                 }
+            }
+            
+            // If no suitable tab was found, default to info tab
+            if (!tabSelected) {
+                activeTab.value = 'info';
             }
             
             document.body.classList.add('modal-open');
@@ -792,6 +872,8 @@ export default {
         return {
             availableTabs,
             hasTabContent,
+            isTabDisabled,
+            getTabUnavailabilityReason,
             renderMarkdown,
             escapeHtml,
             searchQuery,
