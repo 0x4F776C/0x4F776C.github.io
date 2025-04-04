@@ -37,7 +37,7 @@
 
 /* GitHub Pages specific fixes */
 @media screen and (max-width: 768px) {
-    .malware-grid {
+    .sample-grid {
         grid-template-columns: 1fr;
     }
     
