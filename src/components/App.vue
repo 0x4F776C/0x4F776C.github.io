@@ -19,14 +19,14 @@
     <div class="search-container">
         <div class="search-input-wrapper">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" v-model="searchQuery" @input="searchMalware" placeholder="Search malware samples...">
+            <input type="text" v-model="searchQuery" @input="searchSample" placeholder="Search for ...">
             <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn" title="Clear search">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         <div class="category-select-wrapper">
             <i class="fas fa-filter filter-icon"></i>
-            <select v-model="selectedCategory" @change="searchMalware">
+            <select v-model="selectedCategory" @change="searchSample">
                 <option value="">All Categories</option>
                 <option v-for="category in categories" :key="category.name" :value="category.name">
                     {{ category.name }} ({{ category.count }})
@@ -37,7 +37,7 @@
 
     <div v-if="isLoading" class="loading">
         <div class="spinner"></div>
-        <p>Loading malware samples...</p>
+        <p>Loading data from 0x4F776C/ThreatPlayground...</p>
     </div>
 
     <div v-else>
@@ -46,18 +46,18 @@
             <p>{{ errorMessage }}</p>
         </div>
 
-        <div class="malware-grid">
-            <div v-for="mal in truncatedMalware" :key="mal.id || mal.name" class="malware-card" @click="openModal(mal)">
+        <div class="sample-grid">
+            <div v-for="sample in truncatedSample" :key="sample.id || sample.name" class="sample-card" @click="openModal(sample)">
                 <div class="card-header">
-                    <h3>{{ mal.name }}</h3>
+                    <h3>{{ sample.name }}</h3>
                     <div class="tag-container">
-                        <span class="category-tag">{{ mal.category }}</span>
-                        <span :class="['type-tag', mal.itemType === 'Malware' ? 'malware-type' : 'infra-type']">
-                            {{ mal.itemType }}
+                        <span class="category-tag">{{ sample.category }}</span>
+                        <span :class="['type-tag', sample.itemType === 'Malware' ? 'malware-type' : 'infra-type']">
+                            {{ sample.itemType }}
                         </span>
                     </div>
                 </div>
-                <p class="description">{{ mal.truncatedDescription }}</p>
+                <p class="description">{{ sample.truncatedDescription }}</p>
                 <div class="card-footer">
                     <span class="view-details">View details <i class="fas fa-arrow-right"></i></span>
                 </div>
@@ -65,13 +65,13 @@
         </div>
     </div>
 
-    <div v-if="selectedMalware" class="modal" @click="closeModal">
+    <div v-if="selectedSample" class="modal" @click="closeModal">
         <div class="modal-content" @click.stop="">
             <div class="modal-header">
                 <div>
-                    <h2>{{ selectedMalware.name }}</h2>
-                    <span :class="['type-badge', selectedMalware.itemType === 'Malware' ? 'malware-badge' : 'infra-badge']">
-                        {{ selectedMalware.itemType }}
+                    <h2>{{ selectedSample.name }}</h2>
+                    <span :class="['type-badge', selectedSample.itemType === 'Malware' ? 'malware-badge' : 'infra-badge']">
+                        {{ selectedSample.itemType }}
                     </span>
                 </div>
                 <span class="close" @click="closeModal"><i class="fas fa-times"></i></span>
@@ -80,19 +80,19 @@
             <div class="modal-meta">
                 <div class="meta-item">
                     <i class="fas fa-tag"></i>
-                    <p><strong>Category:</strong> {{ selectedMalware.category }}</p>
+                    <p><strong>Category:</strong> {{ selectedSample.category }}</p>
                 </div>
             </div>
 
             <div class="description-section">
                 <h3><i class="fas fa-info-circle"></i> Description</h3>
-                <p>{{ selectedMalware.description }}</p>
+                <p>{{ selectedSample.description }}</p>
             </div>
 
-            <div v-if="selectedMalware.references && selectedMalware.references.length > 0" class="references-section">
+            <div v-if="selectedSample.references && selectedSample.references.length > 0" class="references-section">
                 <h3><i class="fas fa-link"></i> References</h3>
                 <ul>
-                    <li v-for="ref in selectedMalware.references" :key="ref">
+                    <li v-for="ref in selectedSample.references" :key="ref">
                         <a class="reflink" :href="ref" target="_blank" rel="noopener noreferrer">
                             <i class="fas fa-external-link-alt"></i> {{ ref }}
                         </a>
@@ -117,14 +117,14 @@
 
             <div class="tab-content-container">
                 <!-- Info Tab -->
-                <div v-if="activeTab === 'info' && selectedMalware.infoContent" class="tab-content">
-                    <div class="markdown-content" v-html="renderMarkdown(selectedMalware.infoContent)"></div>
+                <div v-if="activeTab === 'info' && selectedSample.infoContent" class="tab-content">
+                    <div class="markdown-content" v-html="renderMarkdown(selectedSample.infoContent)"></div>
                 </div>
 
                 <!-- Code Tab -->
                 <div v-if="activeTab === 'code'" class="tab-content">
-                    <div v-if="selectedMalware.codeFiles && selectedMalware.codeFiles.length > 0">
-                        <div v-for="file in selectedMalware.codeFiles" :key="file.name" class="file-container">
+                    <div v-if="selectedSample.codeFiles && selectedSample.codeFiles.length > 0">
+                        <div v-for="file in selectedSample.codeFiles" :key="file.name" class="file-container">
                             <div class="file-header">
                                 <i class="fas fa-file-code"></i>
                                 <h3>{{ file.name }}</h3>
@@ -144,7 +144,7 @@
 
                 <!-- Analysis Tab -->
                 <div v-if="activeTab === 'analysis'" class="tab-content">
-                    <div v-if="selectedMalware.analysisContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.analysisContent)"></div>
+                    <div v-if="selectedSample.analysisContent" class="markdown-content" v-html="renderMarkdown(selectedSample.analysisContent)"></div>
                     <div v-else-if="isTabDisabled('analysis')" class="content-unavailable">
                         <i class="fas fa-exclamation-triangle"></i> 
                         <span>Analysis is not available for Infrastructure items</span>
@@ -157,7 +157,7 @@
 
                 <!-- Steps Tab -->
                 <div v-if="activeTab === 'steps'" class="tab-content">
-                    <div v-if="selectedMalware.stepsContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.stepsContent)"></div>
+                    <div v-if="selectedSample.stepsContent" class="markdown-content" v-html="renderMarkdown(selectedSample.stepsContent)"></div>
                     <div v-else-if="isTabDisabled('steps')" class="content-unavailable">
                         <i class="fas fa-exclamation-triangle"></i> 
                         <span>Steps are not available for Malware samples</span>
@@ -170,7 +170,7 @@
 
                 <!-- Config Tab -->
                 <div v-if="activeTab === 'config'" class="tab-content">
-                    <div v-if="selectedMalware.configContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.configContent)"></div>
+                    <div v-if="selectedSample.configContent" class="markdown-content" v-html="renderMarkdown(selectedSample.configContent)"></div>
                     <div v-else-if="isTabDisabled('config')" class="content-unavailable">
                         <i class="fas fa-exclamation-triangle"></i> 
                         <span>Configuration is not available for Malware samples</span>
@@ -195,11 +195,11 @@ import hljs from 'highlight.js';
 export default {
     setup() {
         const searchQuery = ref('');
-        const allMalware = ref([]);
-        const malware = ref([]);
+        const allSample = ref([]);
+        const sample = ref([]);
         const selectedCategory = ref('');
         const errorMessage = ref('');
-        const selectedMalware = ref(null);
+        const selectedSample = ref(null);
         const isLoading = ref(true);
         const activeTab = ref('info');
         
@@ -224,14 +224,14 @@ export default {
         ]);
 
         const categories = computed(() => {
-            if (!allMalware.value.length) return [];
+            if (!allSample.value.length) return [];
             
             const categoryCounts = {};
-            allMalware.value.forEach(mal => {
-                if (!categoryCounts[mal.category]) {
-                    categoryCounts[mal.category] = 0;
+            allSample.value.forEach(sample => {
+                if (!categoryCounts[sample.category]) {
+                    categoryCounts[sample.category] = 0;
                 }
-                categoryCounts[mal.category]++;
+                categoryCounts[sample.category]++;
             });
             
             return Object.keys(categoryCounts).map(name => ({
@@ -241,9 +241,9 @@ export default {
         });
 
         const hasTabContent = (tabId) => {
-            if (!selectedMalware.value) return false;
+            if (!selectedSample.value) return false;
             
-            const itemType = selectedMalware.value.itemType;
+            const itemType = selectedSample.value.itemType;
             
             // For Malware items, disable Steps and Config tabs
             if (itemType === 'Malware') {
@@ -261,19 +261,19 @@ export default {
             
             // Check if content exists for tabs
             switch(tabId) {
-                case 'info': return !!selectedMalware.value.infoContent;
-                case 'code': return selectedMalware.value.codeFiles?.length > 0;
-                case 'analysis': return !!selectedMalware.value.analysisContent;
-                case 'steps': return !!selectedMalware.value.stepsContent;
-                case 'config': return !!selectedMalware.value.configContent;
+                case 'info': return !!selectedSample.value.infoContent;
+                case 'code': return selectedSample.value.codeFiles?.length > 0;
+                case 'analysis': return !!selectedSample.value.analysisContent;
+                case 'steps': return !!selectedSample.value.stepsContent;
+                case 'config': return !!selectedSample.value.configContent;
                 default: return false;
             }
         };
 
         const isTabDisabled = (tabId) => {
-            if (!selectedMalware.value) return true;
+            if (!selectedSample.value) return true;
             
-            const itemType = selectedMalware.value.itemType;
+            const itemType = selectedSample.value.itemType;
             
             if (itemType === 'Malware') {
                 return (tabId === 'steps' || tabId === 'config');
@@ -287,9 +287,9 @@ export default {
         };
 
         const getTabUnavailabilityReason = (tabId) => {
-            if (!selectedMalware.value) return '';
+            if (!selectedSample.value) return '';
             
-            const itemType = selectedMalware.value.itemType;
+            const itemType = selectedSample.value.itemType;
             
             if (itemType === 'Malware' && (tabId === 'steps' || tabId === 'config')) {
                 return `${tabId.charAt(0).toUpperCase() + tabId.slice(1)} are not applicable for Malware samples`;
@@ -424,10 +424,10 @@ export default {
             return hasAnalysis ? 'Malware' : 'Infrastructure';
         };
 
-        const loadMalware = async () => {
+        const loadSample = async () => {
             try {
-                const cachedData = localStorage.getItem('cachedMalwareData');
-                const cachedTimestamp = localStorage.getItem('cachedMalwareTimestamp');
+                const cachedData = localStorage.getItem('cachedSampleData');
+                const cachedTimestamp = localStorage.getItem('cachedSampleTimestamp');
                 const CACHE_VALIDITY = 24 * 60 * 60 * 1000;
 
                 if (cachedData && cachedTimestamp) {
@@ -435,8 +435,8 @@ export default {
                     const cacheAge = currentTime - parseInt(cachedTimestamp);
 
                     if (cacheAge < CACHE_VALIDITY) {
-                        allMalware.value = JSON.parse(cachedData);
-                        malware.value = allMalware.value;
+                        allSample.value = JSON.parse(cachedData);
+                        sample.value = allSample.value;
                         isLoading.value = false;
                         return;
                     }
@@ -483,18 +483,18 @@ export default {
                 }
                 
                 // Filter out nulls and sort by name
-                allMalware.value = allEntries
+                allSample.value = allEntries
                     .filter(item => item !== null)
                     .sort((a, b) => a.name.localeCompare(b.name));
                     
-                malware.value = allMalware.value;
+                sample.value = allSample.value;
                 
                 // Cache the data
-                localStorage.setItem('cachedMalwareData', JSON.stringify(allMalware.value));
-                localStorage.setItem('cachedMalwareTimestamp', new Date().getTime().toString());
+                localStorage.setItem('cachedSampleData', JSON.stringify(allSample.value));
+                localStorage.setItem('cachedSampleTimestamp', new Date().getTime().toString());
                 
             } catch (error) {
-                console.error('Error fetching malware:', error);
+                console.error('Error fetching sample:', error);
                 
                 if (error.response && error.response.status === 403) {
                     const rateLimitRemaining = error.response.headers['x-ratelimit-remaining'];
@@ -506,10 +506,10 @@ export default {
                         
                         errorMessage.value = `GitHub API rate limit exceeded. Limit will reset at ${resetTimeString}. Using cached data if available.`;
                         
-                        const cachedData = localStorage.getItem('cachedMalwareData');
+                        const cachedData = localStorage.getItem('cachedSampleData');
                         if (cachedData) {
-                            allMalware.value = JSON.parse(cachedData);
-                            malware.value = allMalware.value;
+                            allSample.value = JSON.parse(cachedData);
+                            sample.value = allSample.value;
                             errorMessage.value += ' Using cached data for now.';
                         }
                     } else {
@@ -676,9 +676,9 @@ export default {
             }));
         };
 
-        const searchMalware = () => {
+        const searchSample = () => {
             const query = searchQuery.value.toLowerCase();
-            malware.value = allMalware.value.filter(item =>
+            sample.value = allSample.value.filter(item =>
                 // Search in name and description
                 (item.name.toLowerCase().includes(query) ||
                  item.description.toLowerCase().includes(query)) &&
@@ -687,12 +687,12 @@ export default {
             );
         };
 
-        const truncatedMalware = computed(() => {
-            return malware.value.map(mal => ({
-                ...mal,
-                truncatedDescription: mal.description && mal.description.length > 70
-                    ? mal.description.substring(0, 70) + '...'
-                    : mal.description || 'No description available'
+        const truncatedSample = computed(() => {
+            return sample.value.map(sample => ({
+                ...sample,
+                truncatedDescription: sample.description && sample.description.length > 70
+                    ? sample.description.substring(0, 70) + '...'
+                    : sample.description || 'No description available'
             }));
         });
 
@@ -706,8 +706,8 @@ export default {
                 .replace(/'/g, "&#039;");
         };
 
-        const openModal = (malware) => {
-            selectedMalware.value = malware;
+        const openModal = (sample) => {
+            selectedSample.value = sample;
             
             // Select the first available and enabled tab with content
             let tabSelected = false;
@@ -732,7 +732,7 @@ export default {
         };
 
         const closeModal = () => {
-            selectedMalware.value = null;
+            selectedSample.value = null;
             document.body.classList.remove('modal-open');
         };
 
@@ -849,14 +849,14 @@ export default {
 
         const setupKeyboardListeners = () => {
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && selectedMalware.value) {
+                if (e.key === 'Escape' && selectedSample.value) {
                     closeModal();
                 }
             });
         };
 
         onMounted(() => {
-            loadMalware();
+            loadSample();
             highlightAll();
             setupKeyboardListeners();
             applyTheme(darkMode.value);
@@ -881,10 +881,10 @@ export default {
             searchQuery,
             categories,
             selectedCategory,
-            malware,
-            searchMalware,
-            selectedMalware,
-            truncatedMalware,
+            sample,
+            searchSample,
+            selectedSample,
+            truncatedSample,
             openModal,
             closeModal,
             activeTab,
@@ -896,7 +896,7 @@ export default {
             toggleTheme,
             clearSearch: () => {
                 searchQuery.value = '';
-                searchMalware();
+                searchSample();
             }
         };
     },
