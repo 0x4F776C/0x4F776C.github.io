@@ -24,13 +24,6 @@
     color: white;
 }
 
-/* Modal header styles */
-.modal-header > div {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
 .type-badge {
     font-size: 0.75rem;
     padding: 0.25rem 0.75rem;
@@ -48,35 +41,4 @@
 .infra-badge {
     background-color: #2e86de;
     color: white;
-}
-
-/* GitHub Pages specific fixes */
-@media screen and (max-width: 768px) {
-    .malware-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-content {
-        width: 95%;
-        max-height: 90vh;
-    }
-}
-
-/* Ensure dark mode works properly on GitHub Pages */
-.dark-theme {
-    --bg-color: #1e1e2e;
-    --text-color: #cdd6f4;
-    --card-bg: #313244;
-    --border-color: #45475a;
-    --accent-color: #89b4fa;
-    --modal-bg: #1e1e2e;
-    --header-color: #cba6f7;
-}
-
-/* Force dark mode styles when class is applied */
-html.dark-theme body, 
-.dark-theme #app,
-.dark-theme .container {
-    background-color: var(--bg-color);
-    color: var(--text-color);
 }

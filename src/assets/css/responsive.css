@@ -35,6 +35,18 @@
     }
 }
 
+/* GitHub Pages specific fixes */
+@media screen and (max-width: 768px) {
+    .malware-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+}
+
 /* Animation Keyframes */
 @keyframes fadeIn {
     from { opacity: 0; }
