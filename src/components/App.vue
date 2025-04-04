@@ -28,7 +28,7 @@
             <i class="fas fa-filter filter-icon"></i>
             <select v-model="selectedCategory" @change="searchMalware">
                 <option value="">All Categories</option>
-                <option v-for="category in categories" :key="category.name">
+                <option v-for="category in categories" :key="category.name" :value="category.name">
                     {{ category.name }} ({{ category.count }})
                 </option>
             </select>
