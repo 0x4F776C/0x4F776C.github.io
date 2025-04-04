@@ -63,7 +63,6 @@ input[type="text"]::placeholder {
     min-width: 200px;
 }
 
-/* 
 select {
     appearance: none;
     width: 100%;
@@ -89,7 +88,3 @@ select option {
     padding: var(--spacing-md);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-
-select:focus + .filter-icon {
-    transform: translateY(-50%) rotate(180deg);
-} */
