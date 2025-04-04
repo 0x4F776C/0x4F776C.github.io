@@ -371,12 +371,13 @@ export default {
                 const references = [];
                 if (content.toLowerCase().includes('## references') || content.toLowerCase().includes('# references')) {
                     const referencesSection = content.split(/## references|# references/i)[1].split('##')[0];
-                    const links = referencesSection.match(/\[.*?\]\(.*?\)|\bhttps?:\/\/\S+\b/g);
+                    // Updated regex to better catch different reference formats
+                    const links = referencesSection.match(/\[.*?\]\((https?:\/\/\S+)\)|https?:\/\/\S+/g);
                     if (links) {
                         links.forEach(link => {
                             let url = link;
                             if (link.includes('](')) {
-                                url = link.split('](')[1].replace(')', '');
+                                url = link.match(/\[.*?\]\((https?:\/\/\S+)\)/)[1];
                             }
                             if (url.startsWith('http')) {
                                 references.push(url);
@@ -741,6 +742,7 @@ export default {
             const languageMap = {
                 // General-purpose programming languages
                 'c': 'language-c',
+                'h': 'language-c',
                 'cpp': 'language-cpp',
                 'cs': 'language-csharp',
                 'go': 'language-go',
