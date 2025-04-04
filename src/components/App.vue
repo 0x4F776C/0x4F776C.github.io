@@ -742,6 +742,7 @@ export default {
             const languageMap = {
                 // General-purpose programming languages
                 'c': 'language-c',
+                'h': 'language-c',
                 'cpp': 'language-cpp',
                 'cs': 'language-csharp',
                 'go': 'language-go',
