@@ -305,6 +305,65 @@ export default {
         const renderMarkdown = (markdown) => {
             if (!markdown) return '';
             try {
+                // Create custom renderer to handle GitHub images
+                const renderer = new marked.Renderer();
+                
+                // Custom image renderer to handle GitHub image paths
+                renderer.image = (href, title, text) => {
+                    // Check if it's a relative path (not starting with http or https)
+                    if (!href.startsWith('http') && !href.startsWith('data:')) {
+                        // Construct GitHub raw content URL for the image
+                        const repoBase = 'https://raw.githubusercontent.com/0x4F776C/ThreatPlayground/main/';
+                        
+                        // If we have the current sample context, we can make the path more precise
+                        if (selectedSample.value) {
+                            let basePath = '';
+                            
+                            // Determine the base path based on item type
+                            if (selectedSample.value.itemType === 'Malware') {
+                                basePath = `Malware/${selectedSample.value.name}/`;
+                            } else {
+                                basePath = `Infrastructure/${selectedSample.value.name}/`;
+                            }
+                            
+                            // Check which tab is active to determine the subdirectory
+                            if (activeTab.value === 'info') {
+                                // Images referenced from info.md are at the sample root
+                                href = repoBase + basePath + href;
+                            } else if (activeTab.value === 'analysis') {
+                                href = repoBase + basePath + 'analysis/' + href;
+                            } else if (activeTab.value === 'steps') {
+                                href = repoBase + basePath + 'steps/' + href;
+                            } else if (activeTab.value === 'config') {
+                                href = repoBase + basePath + 'configuration-files/' + href;
+                            } else {
+                                // Default case - just append to the sample base path
+                                href = repoBase + basePath + href;
+                            }
+                        } else {
+                            // If no context, just append to the repo base URL
+                            href = repoBase + href;
+                        }
+                    }
+                    
+                    // Return the HTML for the image with error handling
+                    return `<img src="${href}" alt="${text}" title="${title || ''}" 
+                            onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\'%3E%3Cpath fill=\\'%23ccc\\' d=\\'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z\'/%3E%3C/svg%3E'; this.style.padding='2px'; this.style.border='1px solid #ddd';" />`;
+                };
+                
+                // Set custom renderer in options
+                marked.setOptions({
+                    headerIds: false,
+                    mangle: false,
+                    gfm: true,
+                    breaks: true,
+                    sanitize: false,
+                    smartLists: true,
+                    smartypants: true,
+                    xhtml: false,
+                    renderer: renderer
+                });
+                
                 return marked(markdown);
             } catch (error) {
                 console.error('Error rendering markdown:', error);
@@ -706,6 +765,21 @@ export default {
                 .replace(/'/g, "&#039;");
         };
 
+        const setupImageHandlers = () => {
+            nextTick(() => {
+                document.querySelectorAll('.markdown-content img').forEach((img) => {
+                    img.style.cursor = 'pointer';
+                    img.addEventListener('click', (e) => {
+                        window.open(e.target.src, '_blank');
+                    });
+                    // Add title indicating users can click to enlarge
+                    if (!img.title) {
+                        img.title = 'Click to enlarge';
+                    }
+                });
+            });
+        };
+
         const openModal = (sample) => {
             selectedSample.value = sample;
             
@@ -728,6 +802,7 @@ export default {
             
             nextTick(() => {
                 highlightAll();
+                setupImageHandlers();
             });
         };
 
@@ -899,6 +974,13 @@ export default {
                 searchSample();
             }
         };
+
+        watch(activeTab, () => {
+            nextTick(() => {
+                highlightAll();
+                setupImageHandlers();
+            });
+        });
     },
     updated() {
         this.$nextTick(() => {
