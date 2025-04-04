@@ -10,3 +10,6 @@
 @import url("analysis-steps.css");
 @import url("screenshot-scrollbar.css");
 @import url("responsive.css");
+@import url("tags-badges.css");
+@import url("markdown-fixes.css");
+@import url("tab-conditional-styles.css");

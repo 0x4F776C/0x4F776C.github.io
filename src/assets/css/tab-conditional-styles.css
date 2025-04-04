@@ -1,0 +1,76 @@
+/* Conditional tab styling based on item type */
+
+/* Style for disabled tabs */
+.tab-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--bg-tertiary);
+    color: var(--text-muted);
+}
+
+/* Empty content styling */
+.empty-content {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-muted);
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius-md);
+    margin: var(--spacing-md) 0;
+}
+
+.empty-content p {
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-content i {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--accent-secondary);
+}
+
+/* File separator for multi-file sections */
+.file-container {
+    margin-bottom: var(--spacing-xl);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+
+.file-container:last-child {
+    margin-bottom: 0;
+}
+
+.file-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.file-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.file-header i {
+    color: var(--accent-primary);
+}
+
+/* Notification badge for unavailable content */
+.content-unavailable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius-md);
+    color: var(--text-muted);
+}
+
+.content-unavailable i {
+    margin-right: var(--spacing-sm);
+    color: var(--warning);
+}
