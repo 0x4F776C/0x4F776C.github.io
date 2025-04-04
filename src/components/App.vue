@@ -143,42 +143,41 @@
                 </div>
 
                 <!-- Analysis Tab -->
-                    <div v-if="activeTab === 'analysis'" class="tab-content">
-                        <div v-if="selectedMalware.analysisContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.analysisContent)"></div>
-                        <div v-else-if="isTabDisabled('analysis')" class="content-unavailable">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <span>Analysis is not available for Infrastructure items</span>
-                        </div>
-                        <div v-else class="empty-content">
-                            <i class="fas fa-microscope"></i>
-                            <p>No analysis content available for this sample.</p>
-                        </div>
+                <div v-if="activeTab === 'analysis'" class="tab-content">
+                    <div v-if="selectedMalware.analysisContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.analysisContent)"></div>
+                    <div v-else-if="isTabDisabled('analysis')" class="content-unavailable">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <span>Analysis is not available for Infrastructure items</span>
                     </div>
-
-                    <!-- Steps Tab -->
-                    <div v-if="activeTab === 'steps'" class="tab-content">
-                        <div v-if="selectedMalware.stepsContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.stepsContent)"></div>
-                        <div v-else-if="isTabDisabled('steps')" class="content-unavailable">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <span>Steps are not available for Malware samples</span>
-                        </div>
-                        <div v-else class="empty-content">
-                            <i class="fas fa-list-ol"></i>
-                            <p>No steps content available for this sample.</p>
-                        </div>
+                    <div v-else class="empty-content">
+                        <i class="fas fa-microscope"></i>
+                        <p>No analysis content available for this sample.</p>
                     </div>
+                </div>
 
-                    <!-- Config Tab -->
-                    <div v-if="activeTab === 'config'" class="tab-content">
-                        <div v-if="selectedMalware.configContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.configContent)"></div>
-                        <div v-else-if="isTabDisabled('config')" class="content-unavailable">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <span>Configuration is not available for Malware samples</span>
-                        </div>
-                        <div v-else class="empty-content">
-                            <i class="fas fa-cog"></i>
-                            <p>No configuration content available for this sample.</p>
-                        </div>
+                <!-- Steps Tab -->
+                <div v-if="activeTab === 'steps'" class="tab-content">
+                    <div v-if="selectedMalware.stepsContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.stepsContent)"></div>
+                    <div v-else-if="isTabDisabled('steps')" class="content-unavailable">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <span>Steps are not available for Malware samples</span>
+                    </div>
+                    <div v-else class="empty-content">
+                        <i class="fas fa-list-ol"></i>
+                        <p>No steps content available for this sample.</p>
+                    </div>
+                </div>
+
+                <!-- Config Tab -->
+                <div v-if="activeTab === 'config'" class="tab-content">
+                    <div v-if="selectedMalware.configContent" class="markdown-content" v-html="renderMarkdown(selectedMalware.configContent)"></div>
+                    <div v-else-if="isTabDisabled('config')" class="content-unavailable">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <span>Configuration is not available for Malware samples</span>
+                    </div>
+                    <div v-else class="empty-content">
+                        <i class="fas fa-cog"></i>
+                        <p>No configuration content available for this sample.</p>
                     </div>
                 </div>
             </div>
