@@ -81,3 +81,16 @@ select:focus {
     border-color: var(--accent-primary);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
+
+/* Make the options visually appealing */
+select option {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Add a neat little animation when dropdown is activated */
+select:focus + .filter-icon {
+    transform: translateY(-50%) rotate(180deg);
+}
