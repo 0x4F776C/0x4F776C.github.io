@@ -39,6 +39,7 @@
     top: 0;
     background-color: var(--bg-secondary);
     z-index: var(--z-sticky);
+    gap: 1rem;
 }
 
 .modal-header h2 {
