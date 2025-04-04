@@ -63,6 +63,7 @@ input[type="text"]::placeholder {
     min-width: 200px;
 }
 
+/* 
 select {
     appearance: none;
     width: 100%;
