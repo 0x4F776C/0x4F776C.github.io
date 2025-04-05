@@ -306,7 +306,7 @@ export default {
             if (!markdown) return '';
             try {
                 // Create custom renderer to handle GitHub images
-                const renderer = new marked.Renderer();
+                const renderer = new marked.marked.Renderer();
                 
                 // Custom image renderer to handle GitHub image paths
                 renderer.image = (href, title, text) => {
@@ -362,7 +362,7 @@ export default {
                 };
                 
                 // Set custom renderer in options
-                marked.setOptions({
+                marked.marked.setOptions({
                     headerIds: false,
                     mangle: false,
                     gfm: true,
@@ -374,7 +374,7 @@ export default {
                     renderer: renderer
                 });
                 
-                return marked(markdown);
+                return marked.marked(markdown);
             } catch (error) {
                 console.error('Error rendering markdown:', error);
                 return `<p>Error rendering content: ${error.message}</p>`;
