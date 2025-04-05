@@ -311,6 +311,12 @@ export default {
                 // Custom image renderer to handle GitHub image paths
                 renderer.image = (href, title, text) => {
                     // Safety check - ensure href is a string
+                    if (href && typeof href === 'object' && href.href) {
+                        console.log('Converting href object to string:', href);
+                        href = href.href;
+                    }
+                    
+                    // Now check if href is a valid string
                     if (!href || typeof href !== 'string') {
                         console.error('Invalid image href:', href);
                         return `<span class="image-error">Image Error</span>`;
