@@ -306,7 +306,7 @@ export default {
             if (!markdown) return '';
             try {
                 // Create custom renderer to handle GitHub images
-                const renderer = new marked.marked.Renderer();
+                const renderer = new marked.Renderer();
                 
                 // Custom image renderer to handle GitHub image paths
                 renderer.image = (href, title, text) => {
@@ -318,8 +318,9 @@ export default {
                     
                     // Check if it's a relative path (not starting with http or https)
                     if (!href.startsWith('http') && !href.startsWith('data:')) {
-                        // Construct GitHub raw content URL for the image
-                        const repoBase = 'https://raw.githubusercontent.com/0x4F776C/ThreatPlayground/main/';
+                        // For GitHub Pages, we need to adjust the path
+                        // Remove leading slashes that may cause issues
+                        href = href.replace(/^\/+/, '');
                         
                         // If we have the current sample context, we can make the path more precise
                         if (selectedSample.value) {
@@ -335,21 +336,23 @@ export default {
                             // Check which tab is active to determine the subdirectory
                             if (activeTab.value === 'info') {
                                 // Images referenced from info.md are at the sample root
-                                href = repoBase + basePath + href;
+                                href = basePath + href;
                             } else if (activeTab.value === 'analysis') {
-                                href = repoBase + basePath + 'analysis/' + href;
+                                href = basePath + 'analysis/' + href;
                             } else if (activeTab.value === 'steps') {
-                                href = repoBase + basePath + 'steps/' + href;
+                                href = basePath + 'steps/' + href;
                             } else if (activeTab.value === 'config') {
-                                href = repoBase + basePath + 'configuration-files/' + href;
+                                href = basePath + 'configuration-files/' + href;
                             } else {
                                 // Default case - just append to the sample base path
-                                href = repoBase + basePath + href;
+                                href = basePath + href;
                             }
-                        } else {
-                            // If no context, just append to the repo base URL
-                            href = repoBase + href;
                         }
+                        
+                        // For GitHub Pages deployment, we need to use the base path
+                        const baseUrl = window.location.pathname.includes('ThreatPlayground') ? 
+                            '/ThreatPlayground/' : '/';
+                        href = baseUrl + href;
                     }
                     
                     // Safely handle title which might be null or undefined
@@ -362,7 +365,7 @@ export default {
                 };
                 
                 // Set custom renderer in options
-                marked.marked.setOptions({
+                marked.setOptions({
                     headerIds: false,
                     mangle: false,
                     gfm: true,
@@ -374,7 +377,7 @@ export default {
                     renderer: renderer
                 });
                 
-                return marked.marked(markdown);
+                return marked(markdown);
             } catch (error) {
                 console.error('Error rendering markdown:', error);
                 return `<p>Error rendering content: ${error.message}</p>`;
