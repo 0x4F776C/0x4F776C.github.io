@@ -1,0 +1,36 @@
+title: ThreatPlayground
+description: ""
+author: "0x4F776C"
+domain: 0x4f776c.github.io
+url: https://0x4f776c.github.io
+baseurl: ""
+repository: 0x4F776C/0x4F776C.github.io
+show_downloads: false
+google_analytics: G-Q81SBKG7V1
+
+# Build settings
+markdown: kramdown
+theme: jekyll-theme-hacker
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-github-metadata
+
+# GitHub metadata settings
+github: [metadata]
+
+# Exclude files from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .gitignore
+  - README.me
+
+# Navigation links
+nav_links:
+  - title: Home
+    url: /
+  - title: Repositories
+    url: /repositories

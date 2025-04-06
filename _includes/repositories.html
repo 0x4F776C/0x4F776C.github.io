@@ -1,0 +1,12 @@
+<div id="repo-page">
+    <div id="results">
+        <div class="loading">Loading repositories...</div>
+    </div>
+</div>
+
+<script>
+    // Pass the GitHub token to the JavaScript
+    window.GITHUB_TOKEN = '{{ github.token }}';
+</script>
+
+<script src="{{ '/assets/js/list-directories.js' | relative_url }}"></script>
