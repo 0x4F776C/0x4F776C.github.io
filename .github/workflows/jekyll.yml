@@ -41,12 +41,12 @@ jobs:
           echo "Listing files in _site:"
           ls -l _site/
           echo "HTML before sed:"
-          cat _site/repositories.html
-          chmod +w _site/repositories.html
+          cat _site/repositories.html # Target the generated repositories.html
+          chmod +w _site/repositories.html # Target the generated repositories.html
           TOKEN="${{ secrets.READ_REPO_TOKEN }}"
-          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _site/_includes/repositories.html
+          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _site/repositories.html # Target the generated repositories.html
           echo "HTML after sed:"
-          cat _site/repositories.html
+          cat _site/repositories.html # Target the generated repositories.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
