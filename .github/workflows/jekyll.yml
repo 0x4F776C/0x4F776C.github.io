@@ -1,7 +1,7 @@
 name: Deploy Jekyll site to Pages
 
 on:
-  pull_request:
+  push:
     branches: ["main"]
   workflow_dispatch:
 
@@ -33,26 +33,14 @@ jobs:
         run: |
           mkdir -p _data
           echo "github_token: \"${{ secrets.READ_REPO_TOKEN }}\"" > _data/tokens.yml
-          cat _data/tokens.yml
       - name: Update repositories.html
         run: |
-          # Create a backup of the original file
           cp _includes/repositories.html _includes/repositories.html.bak
-          
-          # Replace the placeholder with Jekyll Liquid syntax to access the token
           sed -i 's|{{READ_REPO_TOKEN_PLACEHOLDER}}|{{ site.data.tokens.github_token }}|g' _includes/repositories.html
-          
-          # Show the changes (for debugging)
-          echo "Updated repositories.html:"
-          cat _includes/repositories.html
       - name: Build with Jekyll
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
-      - name: Check output HTML (for debugging)
-        run: |
-          echo "Checking built repositories.html:"
-          cat _site/repositories.html | grep -A 3 -B 3 "READ_REPO_TOKEN"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
       - name: Restore original repositories.html
