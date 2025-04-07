@@ -29,31 +29,34 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+      - name: Create _data directory and token file
+        run: |
+          mkdir -p _data
+          echo "github_token: \"${{ secrets.READ_REPO_TOKEN }}\"" > _data/tokens.yml
+          cat _data/tokens.yml
+      - name: Update repositories.html
+        run: |
+          # Create a backup of the original file
+          cp _includes/repositories.html _includes/repositories.html.bak
+          
+          # Replace the placeholder with Jekyll Liquid syntax to access the token
+          sed -i 's|{{READ_REPO_TOKEN_PLACEHOLDER}}|{{ site.data.tokens.github_token }}|g' _includes/repositories.html
+          
+          # Show the changes (for debugging)
+          echo "Updated repositories.html:"
+          cat _includes/repositories.html
       - name: Build with Jekyll
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
-      - name: Inject Read-Only Token into HTML (After Build)
+      - name: Check output HTML (for debugging)
         run: |
-          echo "Token from secret: ${{ secrets.READ_REPO_TOKEN }}"
-          echo "Current directory:"
-          pwd
-          echo "Listing files in _site:"
-          ls -l _site/
-          echo "HTML before sed:"
-          cat _site/repositories.html
-          chmod +w _site/repositories.html
-          TOKEN="${{ secrets.READ_REPO_TOKEN }}"
-          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _site/repositories.html
-          echo "HTML after sed:"
-          cat _site/repositories.html
-      - name: Inject Read-Only Token into Test HTML
-        run: |
-          TOKEN="${{ secrets.READ_REPO_TOKEN }}"
-          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" test.html
-          cat test.html
+          echo "Checking built repositories.html:"
+          cat _site/repositories.html | grep -A 3 -B 3 "READ_REPO_TOKEN"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+      - name: Restore original repositories.html
+        run: mv _includes/repositories.html.bak _includes/repositories.html
 
   deploy:
     environment:
