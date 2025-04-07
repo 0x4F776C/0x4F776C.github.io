@@ -5,8 +5,8 @@
 </div>
 
 <script>
-    // Pass the GitHub token to the JavaScript
-    window.GITHUB_TOKEN = '{{ github.token }}';
+    // Insecure way to read remote repositories. However, GitHub-Pages are client-sided only...
+    window.READ_REPO_TOKEN = "{{READ_REPO_TOKEN_PLACEHOLDER}}";
 </script>
 
 <script src="{{ '/assets/js/list-directories.js' | relative_url }}"></script>
