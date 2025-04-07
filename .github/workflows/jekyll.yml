@@ -36,7 +36,7 @@ jobs:
       - name: Inject Read-Only Token into HTML
         run: |
           TOKEN="${{ secrets.READ_REPO_TOKEN }}"
-          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" repositories.html # Change to source file
+          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _includes/repositories.html # Change to source file
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
