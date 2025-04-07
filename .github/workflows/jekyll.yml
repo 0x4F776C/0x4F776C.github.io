@@ -33,10 +33,20 @@ jobs:
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
-      - name: Inject Read-Only Token into HTML
+      - name: Debug HTML and Token
         run: |
+          echo "Token from secret: ${{ secrets.READ_REPO_TOKEN }}"
+          echo "Current directory:"
+          pwd
+          echo "Listing files:"
+          ls -l
+          echo "HTML before sed:"
+          cat repositories.html
+          chmod +w repositories.html
           TOKEN="${{ secrets.READ_REPO_TOKEN }}"
-          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _includes/repositories.html # Change to source file
+          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _site/repositories.html
+          echo "HTML after sed:"
+          cat repositories.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
