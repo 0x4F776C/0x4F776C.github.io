@@ -5,8 +5,8 @@
 </div>
 
 <script>
-    // This placeholder will be replaced with Jekyll's liquid syntax before build
-    window.READ_REPO_TOKEN = "{{READ_REPO_TOKEN_PLACEHOLDER}}";
+    // Insecure implementation, but GitHub Pages is static so...
+    window.READ_REPO_TOKEN = "{{READ_REPO_TOKEN_PLACEHOLDER}}"; // PAT is of least privilege
 </script>
 
 <script src="{{ '/assets/js/list-directories.js' | relative_url }}"></script>
