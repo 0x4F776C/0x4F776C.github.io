@@ -10,8 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     const depth = 2;
 
-    // Access the GitHub token from the environment variable
-    const githubToken = window.GITHUB_TOKEN;
+    let githubToken = window.READ_REPO_TOKEN; // Get token from injected placeholder
 
     if (!githubToken) {
         resultsContainer.innerHTML = '<div class="error">GitHub token not available.</div>';
