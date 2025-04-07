@@ -37,6 +37,8 @@ jobs:
         run: |
           TOKEN="${{ secrets.READ_REPO_TOKEN }}"
           sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _site/repositories.html
+      - name: Debug HTML
+        run: cat _site/repositories.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
