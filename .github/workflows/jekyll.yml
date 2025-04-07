@@ -34,19 +34,19 @@ jobs:
         env:
           JEKYLL_ENV: production
       - name: Inject Read-Only Token into HTML (After Build)
-      run: |
-        echo "Token from secret: ${{ secrets.READ_REPO_TOKEN }}"
-        echo "Current directory:"
-        pwd
-        echo "Listing files in _site:"
-        ls -l _site/
-        echo "HTML before sed:"
-        cat _site/repositories.html
-        chmod +w _site/repositories.html
-        TOKEN="${{ secrets.READ_REPO_TOKEN }}"
-        sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _site/repositories.html
-        echo "HTML after sed:"
-        cat _site/repositories.html
+        run: |
+          echo "Token from secret: ${{ secrets.READ_REPO_TOKEN }}"
+          echo "Current directory:"
+          pwd
+          echo "Listing files in _site:"
+          ls -l _site/
+          echo "HTML before sed:"
+          cat _site/repositories.html
+          chmod +w _site/repositories.html
+          TOKEN="${{ secrets.READ_REPO_TOKEN }}"
+          sed -i "s|{{READ_REPO_TOKEN_PLACEHOLDER}}|${TOKEN}|g" _site/repositories.html
+          echo "HTML after sed:"
+          cat _site/repositories.html
       - name: Inject Read-Only Token into Test HTML
         run: |
           TOKEN="${{ secrets.READ_REPO_TOKEN }}"
