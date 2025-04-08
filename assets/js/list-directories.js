@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'ThreatPlayground',
         'Windows-Malware-Dropper',
         'PowerSnail',
+        'PowerShell-Ransomware',
         'Honeyd-Configs',
         'DynamoRIO-x-Ghidra'
     ];
